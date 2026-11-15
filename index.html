@@ -55,7 +55,8 @@ header{height:74px;position:fixed;z-index:90;inset:0 0 auto;display:flex;align-i
 .stagecopy .micro,.stagecopy.c2 .micro,.stagecopy .pill{display:none}
 .vignette{background:linear-gradient(0deg,#0710146b,transparent 26%,transparent 80%,#07101448)}
 #transition-veil{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;
- background:radial-gradient(ellipse at 50% 60%,#e0eef5 1%,#bdd4df 55%,#739eb1 100%)}
+ background:radial-gradient(ellipse at 50% 60%,#f1f8fb 1%,#dbeaf1 55%,#9ac0d0 100%)}
+#snowstorm{position:absolute;inset:0;z-index:6;pointer-events:none;width:100%;height:100%;opacity:0;display:block}
 @media(max-width:800px){.stagecopy,.stagecopy.c2,.stagecopy.c3,.stagecopy.c4,.stagecopy.c5{
  top:72px;width:calc(100% - 20px);padding:8px 10px;gap:4px;
  background:none!important;backdrop-filter:none!important;display:flex;align-items:center;text-align:center}
@@ -65,7 +66,7 @@ header{height:74px;position:fixed;z-index:90;inset:0 0 auto;display:flex;align-i
 <div class="loading" id="loader"><div class="spin"></div><small>PREPARING THE ASCENT</small></div>
 <div class="progress" id="progress"></div><header><a class="logo" href="#top">THE <span>ASCENT</span><span style="color:#f5f7f4">.</span></a><nav><a href="#story">THE STORY</a><a href="#mission">THE MISSION</a><a href="#contact" class="nav-cta">JOIN THE JOURNEY ↗</a></nav></header>
 <div class="counter" id="counter"><strong id="counter-num">0000</strong><span>STEPS INTO THE JOURNEY</span></div><div class="scrollhint" id="scrollhint">SCROLL TO CLIMB<i></i></div>
-<main id="top"><div class="journey" id="journey"><div class="stage"><div class="fallback" id="fallback"><svg viewBox="0 0 650 600" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M180 500L310 170L430 500M280 260H335L390 410H225L280 260Z" stroke="#a5c6cd" stroke-width="12"/><path d="M270 210L205 170M345 210L410 170M310 170V100H400V170" stroke="#a5c6cd" stroke-width="12"/><path d="M200 495H450" stroke="#a5c6cd" stroke-width="16"/></svg></div><canvas id="three" aria-label="Interactive 3D journey from a stair climbing machine to the Mount Everest summit"></canvas><div class="vignette"></div><div id="transition-veil"></div><div class="grain"></div>
+<main id="top"><div class="journey" id="journey"><div class="stage"><div class="fallback" id="fallback"><svg viewBox="0 0 650 600" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M180 500L310 170L430 500M280 260H335L390 410H225L280 260Z" stroke="#a5c6cd" stroke-width="12"/><path d="M270 210L205 170M345 210L410 170M310 170V100H400V170" stroke="#a5c6cd" stroke-width="12"/><path d="M200 495H450" stroke="#a5c6cd" stroke-width="16"/></svg></div><canvas id="three" aria-label="Interactive 3D journey from a stair climbing machine to the Mount Everest summit"></canvas><div class="vignette"></div><div id="transition-veil"></div><canvas id="snowstorm" aria-hidden="true"></canvas><div class="grain"></div>
 <div class="stagecopy c1 active" data-from="0" data-to=".19"><div class="eyebrow">MEET LIAM</div><h2>HEY, I'M <span>LIAM.</span></h2><p>I work at a gym, I’m always on the move, and I’ve never been great at sitting still. I love pushing myself — and this time, I’ve set my sights on something much bigger.</p><div class="micro">THE BEGINNING</div></div>
 <div class="stagecopy c2" data-from=".19" data-to=".38"><div class="eyebrow">THE DREAM</div><h2>MY GOAL? <span>EVEREST.</span></h2><p>I want to climb Mount Everest. Not just to reach the summit, but to prove that dedication can make even the biggest dreams possible.</p><div class="micro">THE AMBITION</div></div>
 <div class="stagecopy c3" data-from=".38" data-to=".58"><div class="eyebrow">THE CHALLENGE</div><h2>EVERY STEP <span>COUNTS.</span></h2><p>Before I take on Everest for real, I’m matching its elevation right here on a StairMaster. No shortcuts. Just me, the machine, and determination.</p><div class="micro">ONE STEP AT A TIME</div></div>
@@ -94,9 +95,20 @@ const modelLoader=new GLTFLoader();
 function glb(url){return new Promise((resolve,reject)=>modelLoader.load(url,g=>resolve(g.scene),undefined,reject))}
 const assetReady=Promise.all([glb('./assets/models/stairmaster-frame.glb'),glb('./assets/models/stairmaster-step.glb')]).then(([frame,step])=>{
  frame.name='Dedicated StairMaster frame';modelGroup.add(frame);
- for(let i=0;i<16;i++){const g=step.clone(true);g.name='Animated StairMaster step '+(i+1);modelGroup.add(g);treads.push(g)}
+ for(let i=0;i<16;i++){
+  const g=step.clone(true);g.name='Animated StairMaster step '+(i+1);
+  // Independent materials let each tread soften at either end without affecting its neighbours.
+  g.traverse(o=>{if(o.isMesh){
+    const prepare=m=>{const copy=m.clone();copy.transparent=true;copy.depthWrite=false;copy.opacity=1;return copy};
+    o.material=Array.isArray(o.material)?o.material.map(prepare):prepare(o.material);
+  }});
+  modelGroup.add(g);treads.push(g)
+ }
  // Material values in the GLBs are opaque; no alpha blending during the scene handoff.
- modelGroup.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.material.side=THREE.FrontSide;o.material.depthWrite=true}});
+ modelGroup.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;
+  const mats=Array.isArray(o.material)?o.material:[o.material];
+  mats.forEach(m=>{m.side=THREE.FrontSide;if(!o.parent?.name?.startsWith('Animated StairMaster step'))m.depthWrite=true});
+ }});
  // PNG display texture is a separate editable asset, overlaid on the 3D console.
  const tex=new THREE.TextureLoader().load('./assets/textures/console-display.png');
  tex.colorSpace=THREE.SRGBColorSpace;
@@ -246,7 +258,32 @@ const keypoints=[
  // Final hero shot: behind Liam, close to the tip, so he reads as standing on the highest point.
  {t:1,pos:[summitX+2.2,summitY+2.55,summitZ+8.8],look:[summitX-.15,summitY+1.95,summitZ-4.2],fov:39}
  ];function sample(t){let i=keypoints.findIndex(p=>p.t>=t);if(i<1)i=1;let a=keypoints[i-1],b=keypoints[i],v=smooth(a.t,b.t,t);return{pos:a.pos.map((n,k)=>mix(n,b.pos[k],v)),look:a.look.map((n,k)=>mix(n,b.look[k],v)),fov:mix(a.fov,b.fov,v)}}
-const journey=document.querySelector('#journey'),texts=[...document.querySelectorAll('.stagecopy')],counter=document.querySelector('#counter-num'),progress=document.querySelector('#progress'),hint=document.querySelector('#scrollhint');let current=0,target=0,frame=0,prev=performance.now();const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;function resize(){let w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}addEventListener('resize',resize);resize();function onScroll(){let rect=journey.getBoundingClientRect();target=clamp(-rect.top/(rect.height-innerHeight),0,1);progress.style.width=(target*100)+'%';hint.style.opacity=String(1-smooth(.04,.17,target));counter.textContent=String(Math.floor(target*8849)).padStart(4,'0');texts.forEach(e=>{let from=+e.dataset.from,to=+e.dataset.to;let fade=smooth(from-.035,from+.045,target)*(1-smooth(to-.06,to+.02,target));e.style.opacity=fade;e.style.transform=`translate(-50%, ${(1-fade)*-8}px)`})}addEventListener('scroll',onScroll,{passive:true});onScroll();
+// Screen-space snow starts while the StairMaster is still in view, before the white mist handoff.
+const snowCanvas=document.getElementById('snowstorm'),snowCtx=snowCanvas.getContext('2d');
+let snowW=1,snowH=1,snowDpr=1;
+const blizzard=Array.from({length:200},(_,i)=>({
+ x:((i*73.73)%101)/101,y:((i*41.17)%103)/103,
+ size:1.2+(i%7)*.47,speed:.08+(i%11)*.012,
+ drift:((i*29)%13-6)*.0017,depth:.35+(i%9)/10
+}));
+function sizeSnow(){snowDpr=Math.min(devicePixelRatio||1,1.5);snowW=innerWidth;snowH=innerHeight;
+ snowCanvas.width=Math.max(1,Math.round(snowW*snowDpr));snowCanvas.height=Math.max(1,Math.round(snowH*snowDpr));
+ snowCtx.setTransform(snowDpr,0,0,snowDpr,0,0);
+}
+function paintSnow(now,amount){
+ snowCtx.clearRect(0,0,snowW,snowH);
+ if(amount<.003)return;
+ snowCtx.fillStyle='#ffffff';
+ for(const f of blizzard){
+  const x=((f.x+now*.00013*f.drift*60+1)%1)*snowW;
+  const y=((f.y+now*.001*f.speed)%1)*snowH;
+  const r=f.size*(.55+.5*f.depth);snowCtx.globalAlpha=Math.min(.96,amount*(.35+.52*f.depth));
+  snowCtx.beginPath();snowCtx.arc(x,y,r,0,Math.PI*2);snowCtx.fill();
+ }
+ snowCtx.globalAlpha=1;
+}
+sizeSnow();
+const journey=document.querySelector('#journey'),texts=[...document.querySelectorAll('.stagecopy')],counter=document.querySelector('#counter-num'),progress=document.querySelector('#progress'),hint=document.querySelector('#scrollhint');let current=0,target=0,frame=0,prev=performance.now();const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;function resize(){let w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();sizeSnow()}addEventListener('resize',resize);resize();function onScroll(){let rect=journey.getBoundingClientRect();target=clamp(-rect.top/(rect.height-innerHeight),0,1);progress.style.width=(target*100)+'%';hint.style.opacity=String(1-smooth(.04,.17,target));counter.textContent=String(Math.floor(target*8849)).padStart(4,'0');texts.forEach(e=>{let from=+e.dataset.from,to=+e.dataset.to;let fade=smooth(from-.035,from+.045,target)*(1-smooth(to-.06,to+.02,target));e.style.opacity=fade;e.style.transform=`translate(-50%, ${(1-fade)*-8}px)`})}addEventListener('scroll',onScroll,{passive:true});onScroll();
 function draw(now){
  requestAnimationFrame(draw);
  let dt=Math.min(.05,(now-prev)/1000);prev=now;
@@ -255,16 +292,25 @@ function draw(now){
  // A brief opaque mist wipe separates the gym and the mountain; no transparent polygons.
  const mist=document.getElementById('transition-veil');
  mist.style.opacity=String(Math.pow(Math.max(0,1-Math.abs(t-.50)/.11),1.15)*.97);
+ // Gentle flakes first (.32), snowstorm builds (.42), remains during the white-out, then clears.
+ const storm=smooth(.31,.45,t)*(1-smooth(.55,.69,t));
+ snowCanvas.style.opacity=String(storm);
+ paintSnow(now,storm);
  gym.visible=t<.505;mountain.visible=t>=.505;
  scene.background.copy(dark).lerp(skyBlue,smooth(.43,.69,t)*.85);
  scene.fog.color.copy(fogDark).lerp(fogBlue,smooth(.43,.75,t));
  scene.fog.density=mix(.016,.006,smooth(.45,.8,t));
  const stairScroll=smooth(0,.34,Math.min(t,.34));
- const cycle=stairScroll*34; // Steps descend underfoot as the visitor scrolls down; reverse when scrolling up.
+ const cycle=stairScroll*17; // Half of V2.9's travel. No autonomous movement.
  for(let i=0;i<treads.length;i++){
   const q=((i-cycle)%16+16)%16;
   treads[i].position.set(0,.55+q*.275,2.55-q*.38);
-  treads[i].visible=q<15.5;
+  // Fade in at the returning lower end, fade out before the upper-end wrap.
+  const alpha=smooth(.05,1.5,q)*(1-smooth(14,15.95,q));
+  treads[i].visible=alpha>.008;
+  treads[i].traverse(o=>{if(o.isMesh){
+   for(const mat of (Array.isArray(o.material)?o.material:[o.material]))mat.opacity=alpha;
+  }});
  }
  // Never mutate shared material opacity: depth buffers remain solid at every step.
  for(const m of [M.frame,M.dark,M.metal,M.rubber,M.lime,M.screen,M.snow,M.ice,M.rock,M.stone,trailMat]){

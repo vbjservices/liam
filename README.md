@@ -23,3 +23,9 @@ assets/textures/console-display.png
 
 ## Notes
 The contact form is currently a mailto demo with a placeholder address; update this before publishing. The 8,849 m figure expresses the Everest elevation target, not a verified number of steps. 3D visual rendering should be checked in your browser.
+
+## V3.0 — Steps and snowstorm transition
+- StairMaster step travel per page scroll is half of V2.9 (34 → 17 cycle units), including reverse scrolling.
+- Each tread gets its own materials; tread opacity fades gently near its entrance/exit instead of popping on/off.
+- A lightweight canvas-based snowstorm begins before the opaque white/mist transition, builds in density and clears after entering the mountain. Snow is rendered above the 3D scene and has no external asset dependencies.
+- Existing GLB assets, console texture, mountain route, narrative and character are unchanged.
