@@ -9,19 +9,19 @@ header{height:74px;position:fixed;z-index:90;inset:0 0 auto;display:flex;align-i
 @media(max-width:800px){header{height:65px;padding:0 6%}.logo{font-size:21px}header nav{gap:12px}header nav a:not(.nav-cta){display:none}.nav-cta{padding:10px 12px;font-size:10px}.stagecopy{left:8%;top:33%;transform:translateY(-25%);max-width:84vw}.stagecopy h1,.stagecopy h2{font-size:clamp(65px,16vw,108px)}.stagecopy.c2{left:8%;right:auto;text-align:left}.stagecopy.c2 p{margin-left:0}.stagecopy.c2 .micro{justify-content:flex-start}.stagecopy.c2 .micro:after{display:none}.stagecopy.c3,.stagecopy.c4,.stagecopy.c5{top:30%}.stagecopy p{max-width:300px}.side-label{display:none}.counter{right:7%;bottom:22px}.scrollhint{left:8%;transform:none;bottom:35px;align-items:start}.scrollhint i{height:28px}.chapter{padding:75px 8vw}.chapter-grid{grid-template-columns:1fr;gap:25px}.metrics{grid-template-columns:1fr 1fr}.metrics>div{padding:22px!important}.metrics>div:last-child{border-top:1px solid #bec6c0}.contact{grid-template-columns:1fr;gap:45px;padding:85px 8vw}.foot{padding:22px 8vw;line-height:1.7}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.loading .spin{animation:none}}
 
-/* V2.1 — top-centered chapter storytelling. The 3D scene stays full screen. */
+/* V2.3 — top-centered chapter storytelling, but lighter and more subtle. */
 .stagecopy,.stagecopy.c2,.stagecopy.c3,.stagecopy.c4,.stagecopy.c5{
-  top:92px;left:50%;right:auto;bottom:auto;
-  width:min(1090px,calc(100% - 13vw));max-width:none;
-  display:grid;grid-template-columns:minmax(220px,.95fr) minmax(260px,1.15fr);
-  grid-template-rows:auto auto;column-gap:clamp(22px,4.5vw,80px);row-gap:4px;
-  align-items:center;text-align:left;transform:translate(-50%,0);
-  padding:17px 30px 19px;border-top:1px solid #ffffff3b;
-  background:linear-gradient(90deg,#071014bb,#071014a0 55%,#07101485);
-  backdrop-filter:blur(9px);pointer-events:none;
+  top:96px;left:50%;right:auto;bottom:auto;
+  width:min(980px,calc(100% - 14vw));max-width:none;
+  display:grid;grid-template-columns:minmax(220px,.9fr) minmax(260px,1.1fr);
+  grid-template-rows:auto auto;column-gap:clamp(20px,4vw,64px);row-gap:2px;
+  align-items:start;text-align:left;transform:translate(-50%,0);
+  padding:10px 18px 12px;border-top:1px solid #ffffff2b;
+  background:linear-gradient(90deg,rgba(7,16,20,.42),rgba(7,16,20,.22) 58%,rgba(7,16,20,.08));
+  backdrop-filter:blur(4px);pointer-events:none;border-radius:10px;
 }
-.stagecopy .eyebrow{grid-column:1/-1;font-size:10px;letter-spacing:.24em}
-.stagecopy h1,.stagecopy h2{grid-column:1;grid-row:2;font-size:clamp(39px,4.1vw,67px);line-height:.87;margin:8px 0 0}
+.stagecopy .eyebrow{grid-column:1/-1;font-size:9px;letter-spacing:.26em;opacity:.78}
+.stagecopy h1,.stagecopy h2{grid-column:1;grid-row:2;font-size:clamp(34px,3.6vw,58px);line-height:.9;margin:6px 0 0}
 .stagecopy h1 span,.stagecopy h2 span{display:inline}
 .stagecopy p,.stagecopy.c2 p{grid-column:2;grid-row:2;max-width:410px;margin:0;line-height:1.6;font-size:clamp(12px,1.05vw,15px)}
 .stagecopy .micro,.stagecopy.c2 .micro,.stagecopy .pill{display:none}
@@ -38,44 +38,91 @@ header{height:74px;position:fixed;z-index:90;inset:0 0 auto;display:flex;align-i
  .stagecopy h1,.stagecopy h2{grid-column:1;grid-row:auto;margin:0;font-size:clamp(38px,9vw,62px)}
  .stagecopy p,.stagecopy.c2 p{grid-column:1;grid-row:auto;justify-self:center;text-align:center;max-width:370px;font-size:12px;line-height:1.5}
 }
+
+/* V2.4 restrained cinematic captions, no blurred black panels */
+.stagecopy,.stagecopy.c2,.stagecopy.c3,.stagecopy.c4,.stagecopy.c5{
+ top:91px;left:50%;right:auto;width:min(780px,calc(100% - 28px));
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ padding:8px 14px 11px;gap:4px;max-width:none;
+ background:none!important;border:0!important;backdrop-filter:none!important;
+ box-shadow:none!important;text-align:center;transform:translateX(-50%);
+ text-shadow:0 2px 15px rgba(2,10,14,.62);
+}
+.stagecopy .eyebrow{font-size:9px;letter-spacing:.28em;opacity:.93}
+.stagecopy h1,.stagecopy h2{font-size:clamp(24px,2.6vw,42px);line-height:1.05;letter-spacing:.015em;margin:0;text-transform:uppercase}
+.stagecopy h1 br,.stagecopy h2 br{display:none}
+.stagecopy p,.stagecopy.c2 p{font-size:clamp(12px,1.07vw,15px);line-height:1.5;max-width:710px;margin:0;color:#e8f0f0}
+.stagecopy .micro,.stagecopy.c2 .micro,.stagecopy .pill{display:none}
+.vignette{background:linear-gradient(0deg,#0710146b,transparent 26%,transparent 80%,#07101448)}
+#transition-veil{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;
+ background:radial-gradient(ellipse at 50% 60%,#e0eef5 1%,#bdd4df 55%,#739eb1 100%)}
+@media(max-width:800px){.stagecopy,.stagecopy.c2,.stagecopy.c3,.stagecopy.c4,.stagecopy.c5{
+ top:72px;width:calc(100% - 20px);padding:8px 10px;gap:4px;
+ background:none!important;backdrop-filter:none!important;display:flex;align-items:center;text-align:center}
+ .stagecopy h1,.stagecopy h2{font-size:clamp(22px,6.7vw,35px)}
+ .stagecopy p,.stagecopy.c2 p{font-size:11px;line-height:1.3;max-width:330px}}
 </style></head><body>
 <div class="loading" id="loader"><div class="spin"></div><small>PREPARING THE ASCENT</small></div>
 <div class="progress" id="progress"></div><header><a class="logo" href="#top">THE <span>ASCENT</span><span style="color:#f5f7f4">.</span></a><nav><a href="#story">THE STORY</a><a href="#mission">THE MISSION</a><a href="#contact" class="nav-cta">JOIN THE JOURNEY ↗</a></nav></header>
 <div class="counter" id="counter"><strong id="counter-num">0000</strong><span>STEPS INTO THE JOURNEY</span></div><div class="scrollhint" id="scrollhint">SCROLL TO CLIMB<i></i></div>
-<main id="top"><div class="journey" id="journey"><div class="stage"><div class="fallback" id="fallback"><svg viewBox="0 0 650 600" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M180 500L310 170L430 500M280 260H335L390 410H225L280 260Z" stroke="#a5c6cd" stroke-width="12"/><path d="M270 210L205 170M345 210L410 170M310 170V100H400V170" stroke="#a5c6cd" stroke-width="12"/><path d="M200 495H450" stroke="#a5c6cd" stroke-width="16"/></svg></div><canvas id="three" aria-label="Interactive 3D journey from a stair climbing machine to the Mount Everest summit"></canvas><div class="vignette"></div><div class="grain"></div>
-<div class="stagecopy c1 active" data-from="0" data-to=".18"><div class="eyebrow">A PERSONAL CHALLENGE</div><h1>EVERY<br>STEP <span>COUNTS.</span></h1><p>One StairMaster. One impossible-looking dream. A journey from the gym floor to the highest point on Earth.</p><div class="micro">THE CLIMB BEGINS HERE</div></div>
-<div class="stagecopy c2" data-from=".18" data-to=".37"><div class="eyebrow">THE WORK NO ONE SEES</div><h2>NO<br>SHORT<span>CUTS.</span></h2><p>Before the altitude. Before the summit. There is the discipline to show up and take the next step.</p><div class="micro">KEEP MOVING UP</div></div>
-<div class="stagecopy c3" data-from=".37" data-to=".56"><div class="eyebrow">WHERE TRAINING BECOMES TERRAIN</div><h2>FROM<br>STEEL <span>TO SNOW.</span></h2><p>The same movement. A completely different world. The climb is no longer a simulation.</p><div class="micro">THE TRANSFORMATION</div></div>
-<div class="stagecopy c4" data-from=".56" data-to=".78"><div class="eyebrow">THE MOUNTAIN IS CALLING</div><h2>CHASE<br>THE <span>SUMMIT.</span></h2><p>Cold air. Thin oxygen. An unforgiving trail. Everything begins with preparation.</p><div class="micro">THE HIGHER YOU GO</div></div>
-<div class="stagecopy c5" data-from=".78" data-to="1.01"><div class="eyebrow">THE ULTIMATE OBJECTIVE</div><h2>8,849<br><span>METRES.</span></h2><p>Mount Everest. The dream is massive. The method is simple: one step at a time.</p><div class="pill">THE JOURNEY IS JUST BEGINNING ↗</div></div>
+<main id="top"><div class="journey" id="journey"><div class="stage"><div class="fallback" id="fallback"><svg viewBox="0 0 650 600" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M180 500L310 170L430 500M280 260H335L390 410H225L280 260Z" stroke="#a5c6cd" stroke-width="12"/><path d="M270 210L205 170M345 210L410 170M310 170V100H400V170" stroke="#a5c6cd" stroke-width="12"/><path d="M200 495H450" stroke="#a5c6cd" stroke-width="16"/></svg></div><canvas id="three" aria-label="Interactive 3D journey from a stair climbing machine to the Mount Everest summit"></canvas><div class="vignette"></div><div id="transition-veil"></div><div class="grain"></div>
+<div class="stagecopy c1 active" data-from="0" data-to=".19"><div class="eyebrow">MEET LIAM</div><h2>HEY, I'M <span>LIAM.</span></h2><p>I work at a gym, I’m always on the move, and I’ve never been great at sitting still. I love pushing myself — and this time, I’ve set my sights on something much bigger.</p><div class="micro">THE BEGINNING</div></div>
+<div class="stagecopy c2" data-from=".19" data-to=".38"><div class="eyebrow">THE DREAM</div><h2>MY GOAL? <span>EVEREST.</span></h2><p>I want to climb Mount Everest. Not just to reach the summit, but to prove that dedication can make even the biggest dreams possible.</p><div class="micro">THE AMBITION</div></div>
+<div class="stagecopy c3" data-from=".38" data-to=".58"><div class="eyebrow">THE CHALLENGE</div><h2>EVERY STEP <span>COUNTS.</span></h2><p>Before I take on Everest for real, I’m matching its elevation right here on a StairMaster. No shortcuts. Just me, the machine, and determination.</p><div class="micro">ONE STEP AT A TIME</div></div>
+<div class="stagecopy c4" data-from=".58" data-to=".79"><div class="eyebrow">THE BIGGER PICTURE</div><h2>I CAN’T DO IT <span>ALONE.</span></h2><p>Climbing Everest takes preparation, equipment, and financial support. I’m sharing my journey and looking for sponsors who believe in what I’m working toward.</p><div class="micro">JOIN THE CHALLENGE</div></div>
+<div class="stagecopy c5" data-from=".79" data-to="1.01"><div class="eyebrow">THE JOURNEY</div><h2>THE SUMMIT <span>STARTS HERE.</span></h2><p>Every training session brings me closer. Every step is progress. Every bit of support makes the dream more possible. This is my journey to the top — and I’m just getting started.</p><div class="micro">THE ASCENT CONTINUES</div></div>
 </div></div>
 <section class="chapter" id="story"><div class="eyebrow">THE WHY BEHIND THE CLIMB</div><h2>THE BIGGEST JOURNEYS<br>START <span>SMALL.</span></h2><div class="chapter-grid"><p>This is more than a fitness challenge. It's a reminder that extraordinary goals aren't reached in a single leap. They're earned through thousands of ordinary, intentional steps.</p><p class="accent-line">Today, it's the StairMaster. Tomorrow, it's the mountain. Follow the process, the progress, the setbacks, and the determination behind the ascent.</p></div><div class="metrics" id="mission"><div><strong>ONE</strong><span>Step at a time</span></div><div><strong>8,849 m</strong><span>Everest summit elevation (approx.)</span></div><div><strong>∞</strong><span>Reasons to keep going</span></div></div></section>
 <section class="contact" id="contact"><div><div class="eyebrow">BE PART OF THE STORY</div><h2>LET'S<br><span>CLIMB.</span></h2><p>Want to support the challenge, collaborate, share a story, or just say hello? Every great ascent has people behind it.</p></div><form id="contact-form"><label>Your name<input required maxlength="100" name="name" placeholder="Your name" autocomplete="name"></label><label>Email address<input required type="email" maxlength="200" name="email" placeholder="you@example.com" autocomplete="email"></label><label>Your message<textarea required maxlength="2000" rows="5" name="message" placeholder="Tell us what's on your mind..."></textarea></label><button type="submit">SEND A MESSAGE ↗</button><p class="form-note">Demo: this opens your email application. Connect a form service before publishing.</p></form></section></main><footer class="foot"><strong>THE ASCENT © 2026</strong><span>ONE STEP CLOSER TO THE TOP OF THE WORLD.</span></footer>
 <script>setTimeout(()=>{const l=document.getElementById("loader");if(l){l.classList.add("hide");setTimeout(()=>l.remove(),850)}},6500)</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const canvas=document.querySelector('#three');const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;
 const scene=new THREE.Scene();scene.background=new THREE.Color('#0b171b');scene.fog=new THREE.FogExp2('#101d22',.013);
 const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.06,350);
 scene.add(new THREE.HemisphereLight(0xcce8ff,0x122024,2.1));const key=new THREE.DirectionalLight(0xf4f5e5,3.1);key.position.set(-14,27,22);scene.add(key);const rim=new THREE.DirectionalLight(0x8fd4e1,3);rim.position.set(9,12,-15);scene.add(rim);
 const M={frame:new THREE.MeshStandardMaterial({color:0x151f24,metalness:.85,roughness:.31}),dark:new THREE.MeshStandardMaterial({color:0x080e13,metalness:.58,roughness:.37}),metal:new THREE.MeshStandardMaterial({color:0x34464c,metalness:.75,roughness:.29}),rubber:new THREE.MeshStandardMaterial({color:0x11191c,metalness:.15,roughness:.86}),lime:new THREE.MeshStandardMaterial({color:0xdffb78,emissive:0x566c22,emissiveIntensity:.35,roughness:.35}),screen:new THREE.MeshStandardMaterial({color:0x0c2a34,emissive:0x146378,emissiveIntensity:.6}),snow:new THREE.MeshStandardMaterial({color:0xe5f3fa,roughness:.9,flatShading:true}),ice:new THREE.MeshStandardMaterial({color:0x9cbfd2,roughness:.85,flatShading:true}),rock:new THREE.MeshStandardMaterial({color:0x344b58,roughness:1,flatShading:true}),stone:new THREE.MeshStandardMaterial({color:0x526d79,roughness:1,flatShading:true})};
-const gym=new THREE.Group();scene.add(gym);function box(parent,w,h,d,x,y,z,mat){let m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);parent.add(m);return m}function tube(parent,a,b,r,mat){let dir=new THREE.Vector3().subVectors(b,a);let m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,dir.length(),9),mat);m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());parent.add(m);return m}function P(x,y,z){return new THREE.Vector3(x,y,z)}
-// Procedurally modelled step mill, with true depth and metal tread geometry.
-box(gym,3,.35,6,0,.23,0,M.dark);box(gym,3.2,.18,5.8,0,.08,0,M.frame);
-for(let s of [-1,1]){box(gym,.21,.67,5.6,s*1.49,.48,-.12,M.frame);tube(gym,P(s*1.43,.42,2.7),P(s*1.43,4.5,-2.3),.105,M.metal);tube(gym,P(s*1.43,4.5,-2.3),P(s*1.43,5.8,-2.75),.105,M.metal);tube(gym,P(s*1.4,4.4,-2.23),P(s*.81,4.5,-1.2),.095,M.metal);tube(gym,P(s*.81,4.5,-1.2),P(s*.81,4.35,.35),.095,M.metal);box(gym,.13,.13,4.9,s*1.3,1.65,-.2,M.lime)}
-box(gym,1.3,.88,.3,0,5.7,-2.74,M.frame);box(gym,1.08,.53,.045,0,5.76,-2.48,M.screen);box(gym,.65,.05,.06,0,5.52,-2.44,M.lime);
-const treadGroup=new THREE.Group();gym.add(treadGroup);const treads=[];for(let i=0;i<16;i++){const g=new THREE.Group();box(g,2.49,.29,.67,0,0,0,M.metal);box(g,2.35,.04,.59,0,.16,0,M.rubber);for(let j=0;j<9;j++)box(g,2.27,.013,.018,0,.19,-.26+j*.065,M.metal);treadGroup.add(g);treads.push(g)}
+// Dedicated reusable GLB assets. The 3D StairMaster lives in assets/models/.
+const gym=new THREE.Group();scene.add(gym);
+function box(parent,w,h,d,x,y,z,mat){let m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);parent.add(m);return m}
+function tube(parent,a,b,r,mat){let dir=new THREE.Vector3().subVectors(b,a);let m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,dir.length(),12),mat);m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());parent.add(m);return m}
+function P(x,y,z){return new THREE.Vector3(x,y,z)}
+const treads=[], modelGroup=new THREE.Group();gym.add(modelGroup);
+const modelLoader=new GLTFLoader();
+function glb(url){return new Promise((resolve,reject)=>modelLoader.load(url,g=>resolve(g.scene),undefined,reject))}
+const assetReady=Promise.all([glb('./assets/models/stairmaster-frame.glb'),glb('./assets/models/stairmaster-step.glb')]).then(([frame,step])=>{
+ frame.name='Dedicated StairMaster frame';modelGroup.add(frame);
+ for(let i=0;i<16;i++){const g=step.clone(true);g.name='Animated StairMaster step '+(i+1);modelGroup.add(g);treads.push(g)}
+ // Material values in the GLBs are opaque; no alpha blending during the scene handoff.
+ modelGroup.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.material.side=THREE.FrontSide;o.material.depthWrite=true}});
+ // PNG display texture is a separate editable asset, overlaid on the 3D console.
+ const tex=new THREE.TextureLoader().load('./assets/textures/console-display.png');
+ tex.colorSpace=THREE.SRGBColorSpace;
+ const screen=new THREE.Mesh(new THREE.PlaneGeometry(1.06,.40),new THREE.MeshBasicMaterial({map:tex,transparent:false,depthWrite:true,side:THREE.DoubleSide}));
+ screen.position.set(0,5.74,-2.426);modelGroup.add(screen);
+ document.querySelector('#asset-status').textContent='3D StairMaster loaded';
+}).catch(err=>{console.error('Could not load dedicated 3D assets:',err);document.querySelector('#asset-status').textContent='Model files missing — serve the complete folder over HTTP';});
 for(let i=0;i<20;i++){let x=(i%2?1:-1)*(7+i%5*2);box(gym,.16,4+Math.random()*3,.16,x,2,(-i%9)*5,M.dark)}
 const floor=box(gym,100,.1,70,0,-.19,0,M.dark);const lines=[];for(let i=-8;i<=8;i++){const l=box(gym,.012,.011,60,i*4,-.12,0,M.metal);l.material=M.metal;lines.push(l)}
 // Terrain and distant ranges are actual 3D triangle meshes (not flat pictures).
 const mountain=new THREE.Group();scene.add(mountain);
 // V2.2: a continuous switchback ascent, rather than 96 floating flat stair blocks.
 const pathGroup=new THREE.Group();mountain.add(pathGroup);
-const ascentX=z=>Math.sin((-z)*.077)*5.4+Math.sin((-z)*.026)*1.0;
-const ascentY=z=>2.45+Math.max(0,-z-4)*.285;
+const ascentX=z=>-2.4+Math.sin((-z)*.077)*5.4+Math.sin((-z)*.026)*1.0-10.5*smoothstep(((-z)-106)/87)-3.6*smoothstep(((-z)-186)/22);
+function smoothstep(x){let a=Math.max(0,Math.min(1,x));return a*a*(3-2*a)}
+// The last switchback climbs onto a distinct, highest summit. Terrain beyond it
+// falls away rather than continuing uphill and visually swallowing Liam.
+const ascentY=z=>{
+ const distance=Math.min(212,Math.max(0,-z));
+ const climb=2.45+Math.max(0,distance-4)*.285+Math.max(0,distance-143)*.23;
+ const summitPush=10.5*smoothstep((distance-170)/23)+8.5*smoothstep((distance-188)/16)+6.2*smoothstep((distance-202)/10);
+ return climb+summitPush-Math.max(0,-z-212)*1.35;
+};
 const pathWidth=z=>2.35+Math.sin((-z)*.11)*.18;
 const trailVerts=[],trailUV=[],trailIdx=[],trailColors=[];
-const trailStart=-4,trailEnd=-134,trailN=260;
+const trailStart=-4,trailEnd=-212,trailN=450;
 const toneA=new THREE.Color(0xc8d5db),toneB=new THREE.Color(0xf2f7fa),toneC=new THREE.Color(0xa6beca);
 for(let i=0;i<=trailN;i++){
  const z=trailStart+(trailEnd-trailStart)*i/trailN,x=ascentX(z),y=ascentY(z);
@@ -92,36 +139,98 @@ for(let i=0;i<=trailN;i++){
  if(i<trailN)for(let j=0;j<2;j++){const k=i*3+j;trailIdx.push(k,k+3,k+1,k+1,k+3,k+4)}
 }
 const trailGeo=new THREE.BufferGeometry();trailGeo.setAttribute('position',new THREE.Float32BufferAttribute(trailVerts,3));trailGeo.setAttribute('uv',new THREE.Float32BufferAttribute(trailUV,2));trailGeo.setAttribute('color',new THREE.Float32BufferAttribute(trailColors,3));trailGeo.setIndex(trailIdx);trailGeo.computeVertexNormals();
-const trailMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,metalness:0,side:THREE.DoubleSide,transparent:true,opacity:0});pathGroup.add(new THREE.Mesh(trailGeo,trailMat));
-// Scarred rocks and intermittent route markers keep the scale mountain-like rather than architectural.
-for(let i=0;i<104;i++){
- const z=-6-i*1.22,x=ascentX(z),y=ascentY(z);
- const side=i%2?1:-1,offset=1.75+((i*17)%13)*.19;
- const shard=new THREE.Mesh(new THREE.DodecahedronGeometry(.22+((i*7)%9)*.085,0),i%6===0?M.ice:M.rock);
- shard.position.set(x+side*offset,y-.27+((i*3)%6)*.055,z+Math.sin(i*2.4)*.58);
- shard.rotation.set(i*.17,i*.49,i*.23);shard.scale.set(1.0,.4+((i*5)%7)*.12,1.2);pathGroup.add(shard);
- if(i%19===0){
-  const marker=box(pathGroup,.055,.83,.055,x+side*1.43,y+.27,z,M.stone);
-  marker.rotation.z=side*.095;
-  const flag=box(pathGroup,.34,.18,.025,x+side*1.43+.17,y+.62,z,M.lime);
- }
-}
-// The rising, irregular mountain surface meets the trail and falls into a steep exposed valley.
-const terrainGeo=new THREE.PlaneGeometry(190,200,112,145);terrainGeo.rotateX(-Math.PI/2);
-const pos=terrainGeo.attributes.position;
-for(let i=0;i<pos.count;i++){
- const x=pos.getX(i),z=pos.getZ(i)-72;pos.setZ(i,z);
+const trailMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,metalness:0,side:THREE.FrontSide,transparent:true,opacity:0});pathGroup.add(new THREE.Mesh(trailGeo,trailMat));
+// Terrain height is shared by the mountain surface and all placed details.
+function terrainHeight(x,z){
  const center=ascentX(z),side=x-center,dist=Math.abs(side);
  const base=ascentY(z)-.46;
  const ripples=Math.sin(x*.61+z*.24)*.36+Math.cos(x*.27-z*.34)*.43+Math.sin(x*.14+z*.64)*.23;
- // Ridge on the left; steep fall on the right; soften immediately under the narrow trail.
- const lift=side<0?Math.pow(Math.max(0,dist-1.0),1.18)*.42:-Math.pow(Math.max(0,dist-1.0),1.08)*.67;
+ const ordinaryLift=side<0?Math.pow(Math.max(0,dist-1.0),1.18)*.42:-Math.pow(Math.max(0,dist-1.0),1.08)*.67;
+ const endFactor=smoothstep(((-z)-164)/29);
+ // Both sides of the ultimate ridge now drop away, leaving the summit itself
+ // unmistakably the tallest visible piece of near terrain.
+ const summitFall=-Math.pow(Math.max(0,dist-1.0),1.12)*.88;
+ const lift=ordinaryLift*(1-endFactor)+summitFall*endFactor;
  const edgeBlend=Math.min(1,Math.max(0,(dist-1.05)/2.8));
- pos.setY(i,base+lift+ripples*edgeBlend);
+ return base+lift+ripples*edgeBlend*(1-.75*endFactor);
+}
+const terrainGeo=new THREE.PlaneGeometry(190,340,154,250);terrainGeo.rotateX(-Math.PI/2);
+const pos=terrainGeo.attributes.position;
+for(let i=0;i<pos.count;i++){
+ const x=pos.getX(i),z=pos.getZ(i)-101;pos.setZ(i,z);pos.setY(i,terrainHeight(x,z));
 }
 terrainGeo.computeVertexNormals();mountain.add(new THREE.Mesh(terrainGeo,M.ice));
+// Rocks are planted into the actual snow surface, not estimated at trail height.
+for(let i=0;i<142;i++){
+ const z=-7-i*1.45,center=ascentX(z);
+ const side=i%2?1:-1,offset=2.6+((i*17)%13)*.27;
+ const x=center+side*offset+Math.sin(i*2.4)*.25;
+ const radius=.18+((i*7)%9)*.063;
+ const shard=new THREE.Mesh(new THREE.DodecahedronGeometry(radius,0),i%6===0?M.ice:M.rock);
+ shard.position.set(x,terrainHeight(x,z)-radius*.36,z);
+ shard.rotation.set(i*.17,i*.49,i*.23);
+ shard.scale.set(1,.45+((i*5)%7)*.09,1.1);
+ pathGroup.add(shard);
+ if(i%21===0){
+  const mx=center+side*1.48,my=terrainHeight(mx,z);
+  const marker=box(pathGroup,.055,.65,.055,mx,my+.3,z,M.stone);
+  marker.rotation.z=side*.095;
+  box(pathGroup,.23,.12,.025,mx+.12,my+.5,z,M.lime);
+ }
+}
+// Finale: trail climbs left onto the highest exposed pinnacle, with open air
+// on both sides and a drop-off beyond the tip.
+const summitZ=-212,summitX=ascentX(summitZ),summitY=ascentY(summitZ);
+const summit=new THREE.Group();summit.position.set(summitX,summitY,summitZ);mountain.add(summit);
+// A tapered rocky crown rising from the slope, with its highest ridge at Liam's boots.
+const summitRock=new THREE.Mesh(new THREE.CylinderGeometry(.48,8.9,15,9,6),M.rock);
+summitRock.position.set(0,-8.05,-.34);summitRock.rotation.y=.22;summit.add(summitRock);
+const summitIce=new THREE.Mesh(new THREE.CylinderGeometry(.55,1.9,.42,9,3),M.snow);
+summitIce.position.set(0,.02,-.34);summitIce.rotation.y=.22;summit.add(summitIce);
+// A steeper final spur leading into the crown, visibly connected to the ascending path.
+const accessLedge=new THREE.Mesh(new THREE.BoxGeometry(1.18,.26,5.1),M.snow);
+accessLedge.position.set(.08,-1.15,2.05);accessLedge.rotation.x=-.53;summit.add(accessLedge);
+// Jagged lower flanks give a true summit silhouette instead of a round floating platform.
+for(let i=0;i<9;i++){
+ const a=i*Math.PI*2/9,r=2.6+(i%3)*.5;
+ const flank=new THREE.Mesh(new THREE.ConeGeometry(1.15+(i%3)*.22,4.5+(i%4)*1.6,5),i%3===0?M.ice:M.rock);
+ flank.position.set(Math.cos(a)*r,-2.6,Math.sin(a)*r-.4);
+ flank.rotation.z=Math.cos(a)*.18;flank.rotation.x=Math.sin(a)*.14;summit.add(flank);
+}
+// Slim spires under the crown emphasize that this is the absolute tip, not a shelf.
+for(let i=0;i<4;i++){
+ const spire=new THREE.Mesh(new THREE.ConeGeometry(.42+.08*i,2.6+.9*i,5), i%2?M.rock:M.ice);
+ spire.position.set(-.8+i*.55,-1.6-.38*i,-1.2-i*.5);
+ spire.rotation.z=-.1+i*.08; summit.add(spire);
+}
+// Liam: more realistic silhouette with boots, backpack, jacket and a grounded stance.
+const outfit=new THREE.MeshStandardMaterial({color:0x171f28,roughness:.87}),skin=new THREE.MeshStandardMaterial({color:0xc58d71,roughness:.95}),hair=new THREE.MeshStandardMaterial({color:0x382923,roughness:1}),packMat=new THREE.MeshStandardMaterial({color:0x232f3b,roughness:.9}),bootMat=new THREE.MeshStandardMaterial({color:0x14191f,roughness:.98});
+const climber=new THREE.Group();climber.position.set(.02,.42,-.38);summit.add(climber);
+box(climber,.70,.96,.36,0,1.56,0,outfit);                              // torso/jacket
+box(climber,.34,.18,.3,0,1.02,0,outfit);                               // hips
+box(climber,.16,.86,.18,-.18,.58,.02,outfit);box(climber,.16,.86,.18,.2,.6,-.04,outfit); // legs
+box(climber,.26,.16,.48,-.18,.12,-.08,bootMat);box(climber,.27,.16,.5,.22,.14,-.15,bootMat); // boots
+// Arms, right arm raised slightly to hold pole
+const leftArm=tube(climber,P(-.45,1.86,.02),P(-.56,1.12,-.05),.105,outfit);
+const rightArm=tube(climber,P(.45,1.84,.02),P(.72,1.52,.05),.105,outfit);
+// Backpack and straps
+box(climber,.42,.62,.22,-.02,1.58,-.22,packMat);
+box(climber,.08,.65,.05,-.18,1.56,-.08,packMat);box(climber,.08,.65,.05,.18,1.56,-.08,packMat);
+box(climber,.28,.1,.08,-.02,1.28,-.08,packMat);
+const bedroll=new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,.46,10),packMat);bedroll.rotation.z=Math.PI/2;bedroll.position.set(-.02,1.27,-.28);climber.add(bedroll);
+// Head and hair
+const head=new THREE.Mesh(new THREE.SphereGeometry(.24,16,12),skin);head.position.set(0,2.17,.0);climber.add(head);
+const hairMesh=new THREE.Mesh(new THREE.SphereGeometry(.255,12,10),hair);hairMesh.position.set(0,2.25,-.05);hairMesh.scale.set(1,.66,.92);climber.add(hairMesh);
+// Small collar / hood volume for mountaineering jacket
+box(climber,.34,.12,.22,0,1.92,-.06,outfit);
+// Animated red flag mounted in Liam's right hand.
+const flagPole=box(climber,.05,3.22,.05,.78,2.45,.05,M.metal);
+const flagGeo=new THREE.PlaneGeometry(1.55,.75,20,8);flagGeo.translate(.775,0,0);
+const flagMat=new THREE.MeshStandardMaterial({color:0xc52e2d,roughness:.86,side:THREE.DoubleSide});
+const flag=new THREE.Mesh(flagGeo,flagMat);flag.position.set(.80,3.60,.05);climber.add(flag);
+const flagBase=flagGeo.attributes.position.array.slice();
 function peak(group,x,z,height,radius,seed){let g=new THREE.ConeGeometry(radius,height,5,6);let a=g.attributes.position;for(let i=0;i<a.count;i++){let y=a.getY(i),v=(Math.sin(i*7.1+seed)*.08+Math.cos(i*2.3+seed)*.07);a.setX(i,a.getX(i)*(1+v));a.setZ(i,a.getZ(i)*(1+v));if(y<height*.34)a.setY(i,y+v*height*.12)}g.computeVertexNormals();const mesh=new THREE.Mesh(g,M.rock);mesh.position.set(x,height*.5-4,z);group.add(mesh);const cap=new THREE.Mesh(new THREE.ConeGeometry(radius*.43,height*.46,5,4),M.snow);cap.position.set(x,height*.77-4,z);group.add(cap)}
-for(let i=0;i<23;i++){let x=(i%2?1:-1)*(12+(i*17%55));let z=-12-(i*19%145);peak(mountain,x,z,14+(i*13%38),7+(i*3%15),i)}peak(mountain,6,-160,75,38,7);peak(mountain,-42,-158,49,29,3);peak(mountain,43,-180,57,33,5);
+for(let i=0;i<23;i++){let x=(i%2?1:-1)*(12+(i*17%55));let z=-12-(i*19%145);peak(mountain,x,z,14+(i*13%38),7+(i*3%15),i)}peak(mountain,28,-226,73,38,7);peak(mountain,-62,-218,49,29,3);peak(mountain,72,-238,57,33,5);
 const snowCount=1150,particles=new Float32Array(snowCount*3);for(let i=0;i<snowCount;i++){particles[i*3]=(Math.random()-.5)*100;particles[i*3+1]=Math.random()*45;particles[i*3+2]=-Math.random()*185}const pGeo=new THREE.BufferGeometry();pGeo.setAttribute('position',new THREE.BufferAttribute(particles,3));const flakes=new THREE.Points(pGeo,new THREE.PointsMaterial({color:0xebf7ff,size:.13,transparent:true,opacity:.7,depthWrite:false}));mountain.add(flakes);
 const skyBlue=new THREE.Color('#6a9caf'),dark=new THREE.Color('#0b171b'),fogDark=new THREE.Color('#101d22'),fogBlue=new THREE.Color('#adc8d4');const clamp=THREE.MathUtils.clamp;const smooth=(a,b,v)=>{let t=clamp((v-a)/(b-a),0,1);return t*t*(3-2*t)};const mix=(a,b,t)=>a+(b-a)*t;
 const keypoints=[
@@ -130,15 +239,59 @@ const keypoints=[
  {t:.34,pos:[.9,3.3,3.3],look:[0,3.4,-3.4],fov:64},
  {t:.49,pos:[2.2,7.6,-3],look:[0,7.6,-21],fov:66},
  {t:.64,pos:[4.6,13.6,-25],look:[ascentX(-48),ascentY(-48),-48],fov:64},
- {t:.78,pos:[8.2,26.2,-60],look:[ascentX(-95),ascentY(-95),-95],fov:56},
- {t:1,pos:[-2,42,-102],look:[6,48,-160],fov:49}
+ {t:.76,pos:[4.0,28,-75],look:[ascentX(-121),ascentY(-121),-121],fov:55},
+ {t:.87,pos:[ascentX(-148)+10,ascentY(-148)+8,-141],look:[ascentX(-186),ascentY(-186)+1.4,-186],fov:51},
+ // Distinct final summit push up the last steeper section.
+ {t:.95,pos:[summitX+15,summitY+7.6,summitZ+28],look:[summitX-1.0,summitY+3.2,summitZ+1],fov:45},
+ // Final hero shot: behind Liam, close to the tip, so he reads as standing on the highest point.
+ {t:1,pos:[summitX+2.2,summitY+2.55,summitZ+8.8],look:[summitX-.15,summitY+1.95,summitZ-4.2],fov:39}
  ];function sample(t){let i=keypoints.findIndex(p=>p.t>=t);if(i<1)i=1;let a=keypoints[i-1],b=keypoints[i],v=smooth(a.t,b.t,t);return{pos:a.pos.map((n,k)=>mix(n,b.pos[k],v)),look:a.look.map((n,k)=>mix(n,b.look[k],v)),fov:mix(a.fov,b.fov,v)}}
 const journey=document.querySelector('#journey'),texts=[...document.querySelectorAll('.stagecopy')],counter=document.querySelector('#counter-num'),progress=document.querySelector('#progress'),hint=document.querySelector('#scrollhint');let current=0,target=0,frame=0,prev=performance.now();const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;function resize(){let w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}addEventListener('resize',resize);resize();function onScroll(){let rect=journey.getBoundingClientRect();target=clamp(-rect.top/(rect.height-innerHeight),0,1);progress.style.width=(target*100)+'%';hint.style.opacity=String(1-smooth(.04,.17,target));counter.textContent=String(Math.floor(target*8849)).padStart(4,'0');texts.forEach(e=>{let from=+e.dataset.from,to=+e.dataset.to;let fade=smooth(from-.035,from+.045,target)*(1-smooth(to-.06,to+.02,target));e.style.opacity=fade;e.style.transform=`translate(-50%, ${(1-fade)*-8}px)`})}addEventListener('scroll',onScroll,{passive:true});onScroll();
-function draw(now){requestAnimationFrame(draw);let dt=Math.min(.05,(now-prev)/1000);prev=now;current+=(target-current)*(reduced?1:Math.min(1,dt*4.6));let t=current,world=smooth(.32,.61,t);gym.visible=world<.93;mountain.visible=world>.03;
-scene.background.copy(dark).lerp(skyBlue,smooth(.37,.82,t)*.85);scene.fog.color.copy(fogDark).lerp(fogBlue,smooth(.4,.84,t));scene.fog.density=mix(.016,.006,smooth(.4,.9,t));
-for(let i=0;i<treads.length;i++){let q=((i+now*.0003)%16);treads[i].position.set(0,.55+q*.275,2.55-q*.38);treads[i].visible=q<15.5}gym.scale.setScalar(1);gym.traverse(o=>{if(o.isMesh && o.material!==M.dark && o.material!==M.metal && o.material!==M.lime && o.material!==M.rubber && o.material!==M.frame && o.material!==M.screen)return});
-// Crossfade by material opacity, keeping all geometry and shadows genuinely volumetric.
-const gm=[M.frame,M.dark,M.metal,M.rubber,M.lime,M.screen];gm.forEach(m=>{m.transparent=true;m.opacity=1-smooth(.35,.59,t);m.depthWrite=m.opacity>.8});[M.snow,M.ice,M.rock,M.stone].forEach(m=>{m.transparent=true;m.opacity=smooth(.30,.57,t);m.depthWrite=m.opacity>.8});trailMat.opacity=smooth(.30,.57,t);trailMat.depthWrite=trailMat.opacity>.8;flakes.material.opacity=world*.55;
-const p=sample(t);camera.position.set(...p.pos);let look=new THREE.Vector3(...p.look);camera.lookAt(look);camera.fov=p.fov;camera.updateProjectionMatrix();if(innerWidth<800){camera.position.x+=t<.35?.35:0;camera.fov+=9;camera.updateProjectionMatrix()}const arr=pGeo.attributes.position;for(let i=0;i<snowCount;i++){let y=arr.getY(i)-dt*(.8+i%5*.22);if(y<0)y=45;arr.setY(i,y)}arr.needsUpdate=true;renderer.render(scene,camera)}
+function draw(now){
+ requestAnimationFrame(draw);
+ let dt=Math.min(.05,(now-prev)/1000);prev=now;
+ current+=(target-current)*(reduced?1:Math.min(1,dt*4.6));
+ const t=current,transition=smooth(.41,.60,t);
+ // A brief opaque mist wipe separates the gym and the mountain; no transparent polygons.
+ const mist=document.getElementById('transition-veil');
+ mist.style.opacity=String(Math.pow(Math.max(0,1-Math.abs(t-.50)/.11),1.15)*.97);
+ gym.visible=t<.505;mountain.visible=t>=.505;
+ scene.background.copy(dark).lerp(skyBlue,smooth(.43,.69,t)*.85);
+ scene.fog.color.copy(fogDark).lerp(fogBlue,smooth(.43,.75,t));
+ scene.fog.density=mix(.016,.006,smooth(.45,.8,t));
+ const stairScroll=smooth(0,.34,Math.min(t,.34));
+ const cycle=stairScroll*34; // Steps descend underfoot as the visitor scrolls down; reverse when scrolling up.
+ for(let i=0;i<treads.length;i++){
+  const q=((i-cycle)%16+16)%16;
+  treads[i].position.set(0,.55+q*.275,2.55-q*.38);
+  treads[i].visible=q<15.5;
+ }
+ // Never mutate shared material opacity: depth buffers remain solid at every step.
+ for(const m of [M.frame,M.dark,M.metal,M.rubber,M.lime,M.screen,M.snow,M.ice,M.rock,M.stone,trailMat]){
+  m.transparent=false;m.opacity=1;m.depthWrite=true;
+ }
+ flakes.material.opacity=smooth(.52,.74,t)*.52;
+ const fa=flagGeo.attributes.position;
+ const windPhase=now*.0022;
+ for(let i=0;i<fa.count;i++){
+  const bx=flagBase[i*3], by=flagBase[i*3+1], bz=flagBase[i*3+2];
+  const u=bx/1.55; // anchored at the pole edge, freer toward the outer edge.
+  const amp=Math.pow(Math.max(0,u),1.35);
+  const wave=Math.sin(windPhase+u*6.3+by*2.1)*0.11 + Math.sin(windPhase*1.7+u*11.5)*0.035;
+  fa.setX(i,bx + amp*0.018*Math.sin(windPhase*1.2+by*3.4));
+  fa.setY(i,by + amp*0.035*Math.cos(windPhase*1.45+u*5.8));
+  fa.setZ(i,bz + amp*wave);
+ }
+ fa.needsUpdate=true;flagGeo.computeVertexNormals();
+ const p=sample(t);
+ camera.position.set(...p.pos);camera.lookAt(new THREE.Vector3(...p.look));
+ camera.fov=p.fov+(innerWidth<800?9:0);camera.updateProjectionMatrix();
+ const arr=pGeo.attributes.position;
+ for(let i=0;i<snowCount;i++){
+  let y=arr.getY(i)-dt*(.8+i%5*.22);if(y<0)y=45;arr.setY(i,y);
+ }
+ arr.needsUpdate=true;
+ renderer.render(scene,camera);
+}
 requestAnimationFrame(draw);document.querySelector('#loader').classList.add('hide');setTimeout(()=>document.querySelector('#loader')?.remove(),850);
-</script><script>document.getElementById('contact-form').addEventListener('submit',function(e){e.preventDefault();const d=new FormData(e.currentTarget),name=String(d.get('name')||''),email=String(d.get('email')||''),message=String(d.get('message')||'');location.href='mailto:hello@example.com?subject='+encodeURIComponent('The Ascent — message from '+name)+'&body='+encodeURIComponent(message+'\n\nFrom: '+name+' ('+email+')')});window.addEventListener('error',function(){document.getElementById('loader')?.classList.add('hide')})</script></body></html>
+</script><script>document.getElementById('contact-form').addEventListener('submit',function(e){e.preventDefault();const d=new FormData(e.currentTarget),name=String(d.get('name')||''),email=String(d.get('email')||''),message=String(d.get('message')||'');location.href='mailto:hello@example.com?subject='+encodeURIComponent('The Ascent — message from '+name)+'&body='+encodeURIComponent(message+'\n\nFrom: '+name+' ('+email+')')});window.addEventListener('error',function(){document.getElementById('loader')?.classList.add('hide')})</script><div id="asset-status" role="status" style="position:fixed;bottom:6px;left:10px;z-index:105;font:10px Arial,sans-serif;color:#b9c9c9;opacity:.5;pointer-events:none">Loading 3D model...</div></body></html>
