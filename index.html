@@ -62,6 +62,22 @@ header{height:74px;position:fixed;z-index:90;inset:0 0 auto;display:flex;align-i
  background:none!important;backdrop-filter:none!important;display:flex;align-items:center;text-align:center}
  .stagecopy h1,.stagecopy h2{font-size:clamp(22px,6.7vw,35px)}
  .stagecopy p,.stagecopy.c2 p{font-size:11px;line-height:1.3;max-width:330px}}
+
+/* V3.1 — scroll-choreographed, alternating story cards without opaque panels. */
+.stagecopy,.stagecopy.c2,.stagecopy.c3,.stagecopy.c4,.stagecopy.c5{
+  will-change:transform,opacity,filter;
+  transform:translate3d(calc(-50% + var(--story-x,0px)),var(--story-y,0px),0) scale(var(--story-scale,1));
+  transition:none!important;filter:blur(var(--story-blur,0px));
+  background:none!important;backdrop-filter:none!important;
+  text-shadow:0 2px 20px rgba(1,12,20,.76);
+}
+.stagecopy h1,.stagecopy h2{max-width:950px}
+@media(max-width:800px){
+ .stagecopy,.stagecopy.c2,.stagecopy.c3,.stagecopy.c4,.stagecopy.c5{
+  top:74px;max-width:calc(100% - 20px);
+  transform:translate3d(calc(-50% + var(--story-x,0px)),var(--story-y,0px),0) scale(var(--story-scale,1));
+ }
+}
 </style></head><body>
 <div class="loading" id="loader"><div class="spin"></div><small>PREPARING THE ASCENT</small></div>
 <div class="progress" id="progress"></div><header><a class="logo" href="#top">THE <span>ASCENT</span><span style="color:#f5f7f4">.</span></a><nav><a href="#story">THE STORY</a><a href="#mission">THE MISSION</a><a href="#contact" class="nav-cta">JOIN THE JOURNEY ↗</a></nav></header>
@@ -114,8 +130,8 @@ const assetReady=Promise.all([glb('./assets/models/stairmaster-frame.glb'),glb('
  tex.colorSpace=THREE.SRGBColorSpace;
  const screen=new THREE.Mesh(new THREE.PlaneGeometry(1.06,.40),new THREE.MeshBasicMaterial({map:tex,transparent:false,depthWrite:true,side:THREE.DoubleSide}));
  screen.position.set(0,5.74,-2.426);modelGroup.add(screen);
- document.querySelector('#asset-status').textContent='3D StairMaster loaded';
-}).catch(err=>{console.error('Could not load dedicated 3D assets:',err);document.querySelector('#asset-status').textContent='Model files missing — serve the complete folder over HTTP';});
+ document.querySelector('#asset-status').textContent='3D StairMaster loaded';setTimeout(()=>{const e=document.querySelector('#asset-status');if(e)e.style.opacity='0';},1600);
+}).catch(err=>{console.error('Could not load dedicated 3D assets:',err);document.querySelector('#asset-status').textContent='StairMaster assets could not load. Please serve the complete folder over HTTP.';document.querySelector('#asset-status').style.opacity='1';document.querySelector('#asset-status').style.color='#ffb2a3';});
 for(let i=0;i<20;i++){let x=(i%2?1:-1)*(7+i%5*2);box(gym,.16,4+Math.random()*3,.16,x,2,(-i%9)*5,M.dark)}
 const floor=box(gym,100,.1,70,0,-.19,0,M.dark);const lines=[];for(let i=-8;i<=8;i++){const l=box(gym,.012,.011,60,i*4,-.12,0,M.metal);l.material=M.metal;lines.push(l)}
 // Terrain and distant ranges are actual 3D triangle meshes (not flat pictures).
@@ -194,26 +210,49 @@ for(let i=0;i<142;i++){
 // on both sides and a drop-off beyond the tip.
 const summitZ=-212,summitX=ascentX(summitZ),summitY=ascentY(summitZ);
 const summit=new THREE.Group();summit.position.set(summitX,summitY,summitZ);mountain.add(summit);
-// A tapered rocky crown rising from the slope, with its highest ridge at Liam's boots.
-const summitRock=new THREE.Mesh(new THREE.CylinderGeometry(.48,8.9,15,9,6),M.rock);
-summitRock.position.set(0,-8.05,-.34);summitRock.rotation.y=.22;summit.add(summitRock);
-const summitIce=new THREE.Mesh(new THREE.CylinderGeometry(.55,1.9,.42,9,3),M.snow);
-summitIce.position.set(0,.02,-.34);summitIce.rotation.y=.22;summit.add(summitIce);
-// A steeper final spur leading into the crown, visibly connected to the ascending path.
-const accessLedge=new THREE.Mesh(new THREE.BoxGeometry(1.18,.26,5.1),M.snow);
-accessLedge.position.set(.08,-1.15,2.05);accessLedge.rotation.x=-.53;summit.add(accessLedge);
-// Jagged lower flanks give a true summit silhouette instead of a round floating platform.
-for(let i=0;i<9;i++){
- const a=i*Math.PI*2/9,r=2.6+(i%3)*.5;
- const flank=new THREE.Mesh(new THREE.ConeGeometry(1.15+(i%3)*.22,4.5+(i%4)*1.6,5),i%3===0?M.ice:M.rock);
- flank.position.set(Math.cos(a)*r,-2.6,Math.sin(a)*r-.4);
- flank.rotation.z=Math.cos(a)*.18;flank.rotation.x=Math.sin(a)*.14;summit.add(flank);
+// V3.1 Natural summit: smooth, wind-weathered stone with irregular snow pockets.
+// Material/geometry remains procedural and requires no external model download.
+const weatheredStone=new THREE.MeshStandardMaterial({color:0x465c68,roughness:.98,metalness:0,flatShading:false,vertexColors:true});
+const summitSnow=new THREE.MeshStandardMaterial({color:0xeaf3f5,roughness:.96,metalness:0,flatShading:false});
+function organicRock(parent, center, radius, squish, seed, snowy=false){
+ const g=new THREE.IcosahedronGeometry(radius,3);
+ const a=g.getAttribute('position'), colors=[];
+ const stone=new THREE.Color('#4b6370'),slate=new THREE.Color('#758a91'),bright=new THREE.Color('#b0bbc0');
+ const v=new THREE.Vector3();
+ for(let i=0;i<a.count;i++){
+  v.fromBufferAttribute(a,i);
+  const n=Math.sin(v.x*2.12+seed)*Math.cos(v.z*1.74-seed)*.12+
+          Math.sin(v.y*3.81+v.x*.81+seed*2.3)*.07+
+          Math.cos(v.z*5.13-v.y*1.7)*.035;
+  const f=1+n;
+  v.set(v.x*f*squish[0],v.y*f*squish[1],v.z*f*squish[2]);
+  a.setXYZ(i,v.x,v.y,v.z);
+  const tint=Math.max(0,Math.min(1,(v.y/radius+1)*.5+Math.sin(v.x*1.8+v.z*.7+seed)*.12));
+  const c=stone.clone().lerp(slate,tint*.66).lerp(bright,Math.max(0,tint-.75)*.5);
+  colors.push(c.r,c.g,c.b);
+ }
+ g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));g.computeVertexNormals();
+ const rock=new THREE.Mesh(g,weatheredStone);rock.position.set(...center);parent.add(rock);
+ if(snowy){
+  // A fine, rounded snow crust follows the highest rock surface.
+  const snowGeo=new THREE.SphereGeometry(radius*.99,30,18,0,Math.PI*2,0,Math.PI*.49);
+  snowGeo.scale(squish[0]*1.02,squish[1]*.33,squish[2]*1.02);
+  const snow=new THREE.Mesh(snowGeo,summitSnow);
+  snow.position.set(center[0],center[1]+radius*squish[1]*.77,center[2]);parent.add(snow);
+ }
+ return rock;
 }
-// Slim spires under the crown emphasize that this is the absolute tip, not a shelf.
-for(let i=0;i<4;i++){
- const spire=new THREE.Mesh(new THREE.ConeGeometry(.42+.08*i,2.6+.9*i,5), i%2?M.rock:M.ice);
- spire.position.set(-.8+i*.55,-1.6-.38*i,-1.2-i*.5);
- spire.rotation.z=-.1+i*.08; summit.add(spire);
+// Narrow high crown with textured stone falling away below Liam.
+organicRock(summit,[0,-7.7,-.30],7.1,[.67,1.03,.79],.7,true);
+organicRock(summit,[.12,-.30,-.30],1.01,[.75,.33,.70],2.2,true);
+// The final access spur remains attached to the ridgeline and disappears into the crown.
+const accessLedge=new THREE.Mesh(new THREE.BoxGeometry(1.1,.22,3.6),summitSnow);
+accessLedge.position.set(0,-.74,1.55);accessLedge.rotation.x=-.32;summit.add(accessLedge);
+// Smooth rock outcrops, embedded rather than triangular spikes.
+for(let i=0;i<10;i++){
+ const a=i*Math.PI*2/10,r=1.95+(i%3)*.52;
+ organicRock(summit,[Math.cos(a)*r,-2.9-(i%3)*.32,Math.sin(a)*r-.4],1.35+(i%3)*.3,
+  [.7+(i%3)*.12,1.45,.8],i*.9,i%4===0);
 }
 // Liam: more realistic silhouette with boots, backpack, jacket and a grounded stance.
 const outfit=new THREE.MeshStandardMaterial({color:0x171f28,roughness:.87}),skin=new THREE.MeshStandardMaterial({color:0xc58d71,roughness:.95}),hair=new THREE.MeshStandardMaterial({color:0x382923,roughness:1}),packMat=new THREE.MeshStandardMaterial({color:0x232f3b,roughness:.9}),bootMat=new THREE.MeshStandardMaterial({color:0x14191f,roughness:.98});
@@ -283,7 +322,22 @@ function paintSnow(now,amount){
  snowCtx.globalAlpha=1;
 }
 sizeSnow();
-const journey=document.querySelector('#journey'),texts=[...document.querySelectorAll('.stagecopy')],counter=document.querySelector('#counter-num'),progress=document.querySelector('#progress'),hint=document.querySelector('#scrollhint');let current=0,target=0,frame=0,prev=performance.now();const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;function resize(){let w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();sizeSnow()}addEventListener('resize',resize);resize();function onScroll(){let rect=journey.getBoundingClientRect();target=clamp(-rect.top/(rect.height-innerHeight),0,1);progress.style.width=(target*100)+'%';hint.style.opacity=String(1-smooth(.04,.17,target));counter.textContent=String(Math.floor(target*8849)).padStart(4,'0');texts.forEach(e=>{let from=+e.dataset.from,to=+e.dataset.to;let fade=smooth(from-.035,from+.045,target)*(1-smooth(to-.06,to+.02,target));e.style.opacity=fade;e.style.transform=`translate(-50%, ${(1-fade)*-8}px)`})}addEventListener('scroll',onScroll,{passive:true});onScroll();
+const journey=document.querySelector('#journey'),texts=[...document.querySelectorAll('.stagecopy')],counter=document.querySelector('#counter-num'),progress=document.querySelector('#progress'),hint=document.querySelector('#scrollhint');let current=0,target=0,frame=0,prev=performance.now();const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;function resize(){let w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();sizeSnow()}addEventListener('resize',resize);resize();function onScroll(){let rect=journey.getBoundingClientRect();target=clamp(-rect.top/(rect.height-innerHeight),0,1);progress.style.width=(target*100)+'%';hint.style.opacity=String(1-smooth(.04,.17,target));counter.textContent=String(Math.floor(target*8849)).padStart(4,'0');texts.forEach((e,i)=>{
+ const from=+e.dataset.from,to=+e.dataset.to,span=Math.max(.01,to-from);
+ const entry=smooth(from-.075,from+.035,target),leave=smooth(to-.075,to+.025,target);
+ const fade=entry*(1-leave);
+ // Alternating entrances: odd chapters arrive from the right, even from the left.
+ const direction=i%2===0?-1:1;
+ const entranceX=direction*(1-entry)*Math.min(innerWidth*.26,245);
+ const departureX=direction*leave*Math.min(innerWidth*.20,155);
+ const glide=(target-from)/span-.5;
+ const parallaxY=(1-entry)*28+glide*-24+leave*-16;
+ e.style.opacity=String(fade);
+ e.style.setProperty('--story-x',(entranceX+departureX)+'px');
+ e.style.setProperty('--story-y',parallaxY+'px');
+ e.style.setProperty('--story-scale',String(.955+.045*entry-.015*leave));
+ e.style.setProperty('--story-blur',((1-entry)*3.5+leave*2.2)+'px');
+})}addEventListener('scroll',onScroll,{passive:true});onScroll();
 function draw(now){
  requestAnimationFrame(draw);
  let dt=Math.min(.05,(now-prev)/1000);prev=now;
