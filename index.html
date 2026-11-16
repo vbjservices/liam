@@ -63,6 +63,7 @@ header{height:74px;position:fixed;z-index:90;inset:0 0 auto;display:flex;align-i
  .stagecopy h1,.stagecopy h2{font-size:clamp(22px,6.7vw,35px)}
  .stagecopy p,.stagecopy.c2 p{font-size:11px;line-height:1.3;max-width:330px}}
 
+/* V3.2: Dream is presented in-world on a step, not as a duplicate overlay. */
 /* V3.1 — scroll-choreographed, alternating story cards without opaque panels. */
 .stagecopy,.stagecopy.c2,.stagecopy.c3,.stagecopy.c4,.stagecopy.c5{
   will-change:transform,opacity,filter;
@@ -78,24 +79,31 @@ header{height:74px;position:fixed;z-index:90;inset:0 0 auto;display:flex;align-i
   transform:translate3d(calc(-50% + var(--story-x,0px)),var(--story-y,0px),0) scale(var(--story-scale,1));
  }
 }
+
+/* V3.7: restored mountain chapter overlays, intentionally subtle and positioned inside sticky scene. */
+.stage .stagecopy{z-index:22;pointer-events:none;max-width:min(890px,calc(100% - 32px));top:clamp(86px,12vh,135px);}
+.stage .stagecopy h2{font-size:clamp(24px,3.5vw,50px);line-height:1.08;text-shadow:0 3px 18px rgba(5,20,27,.35);}
+.stage .stagecopy p{font-size:clamp(12px,1.12vw,16px);max-width:830px;text-shadow:0 2px 12px rgba(4,19,28,.45);}
+@media(max-width:800px){.stage .stagecopy{top:76px;}.stage .stagecopy h2{font-size:clamp(24px,6vw,36px)}.stage .stagecopy p{font-size:12px;}}
 </style></head><body>
 <div class="loading" id="loader"><div class="spin"></div><small>PREPARING THE ASCENT</small></div>
 <div class="progress" id="progress"></div><header><a class="logo" href="#top">THE <span>ASCENT</span><span style="color:#f5f7f4">.</span></a><nav><a href="#story">THE STORY</a><a href="#mission">THE MISSION</a><a href="#contact" class="nav-cta">JOIN THE JOURNEY ↗</a></nav></header>
 <div class="counter" id="counter"><strong id="counter-num">0000</strong><span>STEPS INTO THE JOURNEY</span></div><div class="scrollhint" id="scrollhint">SCROLL TO CLIMB<i></i></div>
 <main id="top"><div class="journey" id="journey"><div class="stage"><div class="fallback" id="fallback"><svg viewBox="0 0 650 600" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M180 500L310 170L430 500M280 260H335L390 410H225L280 260Z" stroke="#a5c6cd" stroke-width="12"/><path d="M270 210L205 170M345 210L410 170M310 170V100H400V170" stroke="#a5c6cd" stroke-width="12"/><path d="M200 495H450" stroke="#a5c6cd" stroke-width="16"/></svg></div><canvas id="three" aria-label="Interactive 3D journey from a stair climbing machine to the Mount Everest summit"></canvas><div class="vignette"></div><div id="transition-veil"></div><canvas id="snowstorm" aria-hidden="true"></canvas><div class="grain"></div>
-<div class="stagecopy c1 active" data-from="0" data-to=".19"><div class="eyebrow">MEET LIAM</div><h2>HEY, I'M <span>LIAM.</span></h2><p>I work at a gym, I’m always on the move, and I’ve never been great at sitting still. I love pushing myself — and this time, I’ve set my sights on something much bigger.</p><div class="micro">THE BEGINNING</div></div>
-<div class="stagecopy c2" data-from=".19" data-to=".38"><div class="eyebrow">THE DREAM</div><h2>MY GOAL? <span>EVEREST.</span></h2><p>I want to climb Mount Everest. Not just to reach the summit, but to prove that dedication can make even the biggest dreams possible.</p><div class="micro">THE AMBITION</div></div>
-<div class="stagecopy c3" data-from=".38" data-to=".58"><div class="eyebrow">THE CHALLENGE</div><h2>EVERY STEP <span>COUNTS.</span></h2><p>Before I take on Everest for real, I’m matching its elevation right here on a StairMaster. No shortcuts. Just me, the machine, and determination.</p><div class="micro">ONE STEP AT A TIME</div></div>
-<div class="stagecopy c4" data-from=".58" data-to=".79"><div class="eyebrow">THE BIGGER PICTURE</div><h2>I CAN’T DO IT <span>ALONE.</span></h2><p>Climbing Everest takes preparation, equipment, and financial support. I’m sharing my journey and looking for sponsors who believe in what I’m working toward.</p><div class="micro">JOIN THE CHALLENGE</div></div>
-<div class="stagecopy c5" data-from=".79" data-to="1.01"><div class="eyebrow">THE JOURNEY</div><h2>THE SUMMIT <span>STARTS HERE.</span></h2><p>Every training session brings me closer. Every step is progress. Every bit of support makes the dream more possible. This is my journey to the top — and I’m just getting started.</p><div class="micro">THE ASCENT CONTINUES</div></div>
+<div class="stagecopy c2" data-from=".54" data-to=".64"><div class="eyebrow">THE DREAM</div><h2>MY GOAL? <span>EVEREST.</span></h2><p>I want to climb Mount Everest. Not just to reach the summit, but to prove that dedication can make even the biggest dreams possible.</p><div class="micro">THE AMBITION</div></div>
+<div class="stagecopy c3" data-from=".63" data-to=".76"><div class="eyebrow">THE CHALLENGE</div><h2>EVERY STEP <span>COUNTS.</span></h2><p>Before I take on Everest for real, I’m matching its elevation right here on a StairMaster. No shortcuts. Just me, the machine, and determination.</p><div class="micro">ONE STEP AT A TIME</div></div>
+<div class="stagecopy c4" data-from=".75" data-to=".88"><div class="eyebrow">THE BIGGER PICTURE</div><h2>I CAN’T DO IT <span>ALONE.</span></h2><p>Climbing Everest takes preparation, equipment, and financial support. I’m sharing my journey and looking for sponsors who believe in what I’m working toward.</p><div class="micro">JOIN THE CHALLENGE</div></div>
+<div class="stagecopy c5" data-from=".87" data-to="1.01"><div class="eyebrow">THE JOURNEY</div><h2>THE SUMMIT <span>STARTS HERE.</span></h2><p>Every training session brings me closer. Every step is progress. Every bit of support makes the dream more possible. This is my journey to the top — and I’m just getting started.</p><div class="micro">THE ASCENT CONTINUES</div></div>
 </div></div>
-<section class="chapter" id="story"><div class="eyebrow">THE WHY BEHIND THE CLIMB</div><h2>THE BIGGEST JOURNEYS<br>START <span>SMALL.</span></h2><div class="chapter-grid"><p>This is more than a fitness challenge. It's a reminder that extraordinary goals aren't reached in a single leap. They're earned through thousands of ordinary, intentional steps.</p><p class="accent-line">Today, it's the StairMaster. Tomorrow, it's the mountain. Follow the process, the progress, the setbacks, and the determination behind the ascent.</p></div><div class="metrics" id="mission"><div><strong>ONE</strong><span>Step at a time</span></div><div><strong>8,849 m</strong><span>Everest summit elevation (approx.)</span></div><div><strong>∞</strong><span>Reasons to keep going</span></div></div></section>
+<section class="chapter" id="story"><div class="eyebrow">FROM THE FIRST STEP</div><h2>MEET LIAM. <span>THE DREAM.</span></h2><div class="chapter-grid"><p>I work at a gym, I'm always on the move, and I've never been great at sitting still. I love pushing myself — but this time, I have set my sights on something much bigger.</p><p class="accent-line">My goal? To climb Mount Everest. First, I'm challenging myself to match its elevation on a StairMaster, one step at a time.</p></div><div style="height:38px"></div><div class="eyebrow">THE WHY BEHIND THE CLIMB</div><h2>THE BIGGEST JOURNEYS<br>START <span>SMALL.</span></h2><div class="chapter-grid"><p>This is more than a fitness challenge. It's a reminder that extraordinary goals aren't reached in a single leap. They're earned through thousands of ordinary, intentional steps.</p><p class="accent-line">Today, it's the StairMaster. Tomorrow, it's the mountain. Follow the process, the progress, the setbacks, and the determination behind the ascent.</p></div><div class="metrics" id="mission"><div><strong>ONE</strong><span>Step at a time</span></div><div><strong>8,849 m</strong><span>Everest summit elevation (approx.)</span></div><div><strong>∞</strong><span>Reasons to keep going</span></div></div></section>
 <section class="contact" id="contact"><div><div class="eyebrow">BE PART OF THE STORY</div><h2>LET'S<br><span>CLIMB.</span></h2><p>Want to support the challenge, collaborate, share a story, or just say hello? Every great ascent has people behind it.</p></div><form id="contact-form"><label>Your name<input required maxlength="100" name="name" placeholder="Your name" autocomplete="name"></label><label>Email address<input required type="email" maxlength="200" name="email" placeholder="you@example.com" autocomplete="email"></label><label>Your message<textarea required maxlength="2000" rows="5" name="message" placeholder="Tell us what's on your mind..."></textarea></label><button type="submit">SEND A MESSAGE ↗</button><p class="form-note">Demo: this opens your email application. Connect a form service before publishing.</p></form></section></main><footer class="foot"><strong>THE ASCENT © 2026</strong><span>ONE STEP CLOSER TO THE TOP OF THE WORLD.</span></footer>
 <script>setTimeout(()=>{const l=document.getElementById("loader");if(l){l.classList.add("hide");setTimeout(()=>l.remove(),850)}},6500)</script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 const canvas=document.querySelector('#three');const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;
 const scene=new THREE.Scene();scene.background=new THREE.Color('#0b171b');scene.fog=new THREE.FogExp2('#101d22',.013);
 const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.06,350);
@@ -108,6 +116,8 @@ function tube(parent,a,b,r,mat){let dir=new THREE.Vector3().subVectors(b,a);let 
 function P(x,y,z){return new THREE.Vector3(x,y,z)}
 const treads=[], modelGroup=new THREE.Group();gym.add(modelGroup);
 const modelLoader=new GLTFLoader();
+const fontLoader=new FontLoader();
+const fontReady=new Promise((resolve,reject)=>fontLoader.load('https://cdn.jsdelivr.net/npm/three@0.170.0/examples/fonts/helvetiker_bold.typeface.json',resolve,undefined,reject));
 function glb(url){return new Promise((resolve,reject)=>modelLoader.load(url,g=>resolve(g.scene),undefined,reject))}
 const assetReady=Promise.all([glb('./assets/models/stairmaster-frame.glb'),glb('./assets/models/stairmaster-step.glb')]).then(([frame,step])=>{
  frame.name='Dedicated StairMaster frame';modelGroup.add(frame);
@@ -243,8 +253,8 @@ function organicRock(parent, center, radius, squish, seed, snowy=false){
  return rock;
 }
 // Narrow high crown with textured stone falling away below Liam.
-organicRock(summit,[0,-7.7,-.30],7.1,[.67,1.03,.79],.7,true);
-organicRock(summit,[.12,-.30,-.30],1.01,[.75,.33,.70],2.2,true);
+organicRock(summit,[0,-7.7,-.30],7.1,[.67,1.03,.79],.7,false);
+organicRock(summit,[.12,-.30,-.30],1.01,[.75,.33,.70],2.2,false);
 // The final access spur remains attached to the ridgeline and disappears into the crown.
 const accessLedge=new THREE.Mesh(new THREE.BoxGeometry(1.1,.22,3.6),summitSnow);
 accessLedge.position.set(0,-.74,1.55);accessLedge.rotation.x=-.32;summit.add(accessLedge);
@@ -256,7 +266,7 @@ for(let i=0;i<10;i++){
 }
 // Liam: more realistic silhouette with boots, backpack, jacket and a grounded stance.
 const outfit=new THREE.MeshStandardMaterial({color:0x171f28,roughness:.87}),skin=new THREE.MeshStandardMaterial({color:0xc58d71,roughness:.95}),hair=new THREE.MeshStandardMaterial({color:0x382923,roughness:1}),packMat=new THREE.MeshStandardMaterial({color:0x232f3b,roughness:.9}),bootMat=new THREE.MeshStandardMaterial({color:0x14191f,roughness:.98});
-const climber=new THREE.Group();climber.position.set(.02,.42,-.38);summit.add(climber);
+const climber=new THREE.Group();climber.position.set(.02,.06,-.38);summit.add(climber);
 box(climber,.70,.96,.36,0,1.56,0,outfit);                              // torso/jacket
 box(climber,.34,.18,.3,0,1.02,0,outfit);                               // hips
 box(climber,.16,.86,.18,-.18,.58,.02,outfit);box(climber,.16,.86,.18,.2,.6,-.04,outfit); // legs
@@ -286,7 +296,10 @@ const snowCount=1150,particles=new Float32Array(snowCount*3);for(let i=0;i<snowC
 const skyBlue=new THREE.Color('#6a9caf'),dark=new THREE.Color('#0b171b'),fogDark=new THREE.Color('#101d22'),fogBlue=new THREE.Color('#adc8d4');const clamp=THREE.MathUtils.clamp;const smooth=(a,b,v)=>{let t=clamp((v-a)/(b-a),0,1);return t*t*(3-2*t)};const mix=(a,b,t)=>a+(b-a)*t;
 const keypoints=[
  {t:0,pos:[4.3,3.8,7.3],look:[0,2.85,-.55],fov:40},
- {t:.17,pos:[3.8,3.7,6.6],look:[0,2.8,-.95],fov:43},
+ // Push straight toward the machine while retaining the original front-facing viewpoint.
+ {t:.055,pos:[1.15,3.76,6.8],look:[0,2.92,-.60],fov:39},
+ {t:.13,pos:[.32,3.61,5.9],look:[0,2.88,-.75],fov:36},
+ {t:.27,pos:[.12,3.43,5.1],look:[0,2.72,-.85],fov:33},
  {t:.34,pos:[.9,3.3,3.3],look:[0,3.4,-3.4],fov:64},
  {t:.49,pos:[2.2,7.6,-3],look:[0,7.6,-21],fov:66},
  {t:.64,pos:[4.6,13.6,-25],look:[ascentX(-48),ascentY(-48),-48],fov:64},
@@ -297,6 +310,152 @@ const keypoints=[
  // Final hero shot: behind Liam, close to the tip, so he reads as standing on the highest point.
  {t:1,pos:[summitX+2.2,summitY+2.55,summitZ+8.8],look:[summitX-.15,summitY+1.95,summitZ-4.2],fov:39}
  ];function sample(t){let i=keypoints.findIndex(p=>p.t>=t);if(i<1)i=1;let a=keypoints[i-1],b=keypoints[i],v=smooth(a.t,b.t,t);return{pos:a.pos.map((n,k)=>mix(n,b.pos[k],v)),look:a.look.map((n,k)=>mix(n,b.look[k],v)),fov:mix(a.fov,b.fov,v)}}
+
+// V3.2: upright, world-space messages floating above real StairMaster steps.
+// The labels are separate XY planes (not projected flat onto the treads).
+const stairStories=[
+ {eyebrow:'MEET LIAM',line:'HEY, I\'M LIAM.',sub:'ALWAYS MOVING. ALWAYS AIMING HIGHER.',begin:.047,end:.135},
+ {eyebrow:'THE DREAM',line:'MOUNT EVEREST.',sub:'THE BIGGEST DREAM STARTS SMALL.',begin:.135,end:.235},
+ {eyebrow:'THE CHALLENGE',line:'EVERY STEP COUNTS.',sub:'8,849 METRES. ONE STEP AT A TIME.',begin:.235,end:.343}
+];
+// Extruded typography throughout: each line is actual 3D geometry, not a textured plane.
+// Character spacing is controlled per glyph rather than squeezing letters into the tread width.
+function mixHex(a,b,t){const ca=new THREE.Color(a),cb=new THREE.Color(b);return ca.lerp(cb,t)}
+function smooth01(x){return x<=0?0:x>=1?1:x*x*(3-2*x)}
+function applyVerticalFaceGradient(geo, topHex, midHex, bottomHex, shineHex){
+ geo.computeBoundingBox();
+ const bb=geo.boundingBox;
+ const pos=geo.attributes.position;
+ const colors=[];
+ const h=Math.max(.0001,bb.max.y-bb.min.y);
+ const cTop=new THREE.Color(topHex), cMid=new THREE.Color(midHex), cBot=new THREE.Color(bottomHex), cShine=new THREE.Color(shineHex||topHex);
+ for(let i=0;i<pos.count;i++){
+  const y=pos.getY(i);
+  const t=(y-bb.min.y)/h;
+  let c;
+  if(t>.68){
+    c=cMid.clone().lerp(cTop,smooth01((t-.68)/.32));
+  } else {
+    c=cBot.clone().lerp(cMid,smooth01(t/.68));
+  }
+  // premium face highlight: a soft glossy band across the upper-middle area.
+  const shine=Math.max(0,1-Math.abs(t-.72)/.16);
+  c.lerp(cShine, Math.pow(shine,1.8)*.26);
+  // very subtle darker footing near the bottom helps the text feel more sculpted.
+  const foot=Math.max(0,1-t/.18);
+  c.lerp(cBot, foot*.18);
+  colors.push(c.r,c.g,c.b);
+ }
+ geo.setAttribute('color', new THREE.Float32BufferAttribute(colors,3));
+}
+function buildTrackedType(parent, content, font, opts){
+ const group=new THREE.Group();group.name='3D lettering: '+content;
+ const chars=[...content.toUpperCase()];
+ const letterGap=opts.tracking ?? .014;
+ const thickness=opts.depth ?? .035;
+ let cursor=0;
+ // ONE mesh for every glyph: the bevel is part of the geometry itself.
+ // Previously an expanded outline and offset backing duplicated each letter,
+ // creating the uncomfortable ghosted / double-vision effect.
+ const face=new THREE.MeshPhysicalMaterial({
+  color:0xffffff,vertexColors:true,metalness:opts.metalness ?? .22,roughness:opts.roughness ?? .20,
+  clearcoat:opts.clearcoat ?? .78, clearcoatRoughness:opts.clearcoatRoughness ?? .20,
+  sheen:opts.sheen ?? .55, sheenRoughness:opts.sheenRoughness ?? .45,
+  emissive:opts.emissive ?? 0x08151c,emissiveIntensity:opts.emissiveIntensity ?? .035,
+  transparent:true,opacity:1,depthWrite:true
+ });
+ const sides=new THREE.MeshStandardMaterial({
+  color:opts.sideColor??0x080d12,metalness:opts.sideMetalness ?? .24,roughness:opts.sideRoughness ?? .40,
+  transparent:true,opacity:1,depthWrite:true
+ });
+ for(const char of chars){
+  if(char===' '){cursor+=opts.size*.38+letterGap;continue;}
+  const geo=new TextGeometry(char,{
+   font,size:opts.size,depth:thickness,curveSegments:12,
+   bevelEnabled:true,bevelThickness:Math.min(thickness*.11,.007),
+   bevelSize:Math.min(opts.size*.012,.0045),bevelSegments:3
+  });
+  geo.computeBoundingBox();const bb=geo.boundingBox;
+  const w=bb.max.x-bb.min.x;
+  applyVerticalFaceGradient(
+    geo,
+    opts.highlightTop ?? opts.color,
+    opts.color,
+    opts.shadowBottom ?? mixHex(opts.color,0x56636b,.22),
+    opts.shineColor ?? opts.highlightTop ?? opts.color
+  );
+  geo.translate(-bb.min.x,0,0);
+  // Face and dark sidewalls produce physical depth without duplicate contours.
+  const glyph=new THREE.Mesh(geo,[face,sides]);glyph.position.x=cursor;
+  group.add(glyph);cursor+=w+letterGap;
+ }
+ const width=Math.max(.01,cursor-letterGap);
+ const scale=Math.min(opts.maxScale??1,(opts.targetWidth??3)/width);
+ group.scale.setScalar(scale);group.position.set(-width*scale/2,opts.y,opts.z??0);
+ parent.add(group);
+ return {group,materials:[face,sides]};
+}
+function makeStairText(item,font){
+ const root=new THREE.Group();root.name='Floating 3D chapter: '+item.eyebrow;
+ const title=buildTrackedType(root,item.line,font,{
+  size:.27,tracking:.023,depth:.078,targetWidth:2.83,maxScale:1,
+  y:-.10,z:.05,color:0xe2ebf0,highlightTop:0xffffff,shadowBottom:0x8ea4af,shineColor:0xffffff,
+  sideColor:0x05090d,metalness:.26,roughness:.17,sideMetalness:.28,sideRoughness:.34,
+  clearcoat:.9,clearcoatRoughness:.14,sheen:.66,sheenRoughness:.38,
+  emissive:0x0a1820,emissiveIntensity:.03
+ });
+ const eyebrow=buildTrackedType(root,item.eyebrow,font,{
+  size:.105,tracking:.032,depth:.031,targetWidth:3.1,maxScale:1,
+  y:.47,z:.07,color:0xd1e56a,highlightTop:0xf7ffca,shadowBottom:0x7d8f38,shineColor:0xf8ffdf,
+  sideColor:0x0d1208,metalness:.20,roughness:.22,sideMetalness:.20,sideRoughness:.40,
+  clearcoat:.78,clearcoatRoughness:.18,sheen:.42,sheenRoughness:.5,
+  emissive:0x223111,emissiveIntensity:.022
+ });
+ const subtitle=buildTrackedType(root,item.sub,font,{
+  size:.092,tracking:.020,depth:.029,targetWidth:3.88,maxScale:1,
+  y:-.45,z:.07,color:0xd6dfe4,highlightTop:0xffffff,shadowBottom:0x83949e,shineColor:0xf6fbff,
+  sideColor:0x060b10,metalness:.20,roughness:.22,sideMetalness:.18,sideRoughness:.42,
+  clearcoat:.74,clearcoatRoughness:.2,sheen:.4,sheenRoughness:.52,
+  emissive:0x101b22,emissiveIntensity:.018
+ });
+ root.userData.storyMaterials=[...title.materials,...eyebrow.materials,...subtitle.materials];
+ root.rotation.set(0,0,0);gym.add(root);
+ return root;
+}
+const stairStoryMeshes=stairStories.map(()=>null);
+fontReady.then(font=>{
+ stairStories.forEach((item,i)=>{stairStoryMeshes[i]=makeStairText(item,font)});
+}).catch(err=>{console.warn('Story font failed to load',err);});
+
+// A message receives ONE fixed physical tread for its entire chapter. The old
+// nearest-tread selection reattached it to a new step and caused visible jumps.
+function stairCycleAt(scroll){return smooth(0,.34,Math.min(scroll,.34))*17}
+const storyTreadIndices=stairStories.map(item=>{
+ const startCycle=stairCycleAt(item.begin);
+ // Start just above the centre; the tread travels continuously downward
+ // through the full message interval without crossing the belt's wrap point.
+ return ((Math.round(startCycle+10)%16)+16)%16;
+});
+function updateStairStories(scroll,cycle){
+ const gymAmount=1-smooth(.325,.36,scroll);
+ stairStoryMeshes.forEach((label,index)=>{
+  if(!label) return;
+  const it=stairStories[index],enter=smooth(it.begin-.008,it.begin+.018,scroll),
+        leave=smooth(it.end-.022,it.end+.012,scroll);
+  const tread=treads[storyTreadIndices[index]];
+  if(tread && label.parent!==tread){
+   tread.attach(label); // preserve world pose for this frame, then lock local pose
+   label.position.set(0,.78,.12);
+   label.rotation.set(0,0,0); // upright on the Y axis, facing the viewer
+  }
+  const alpha=enter*(1-leave)*gymAmount;
+  label.visible=!!tread && tread.visible && alpha>.01;
+  for(const mat of label.userData.storyMaterials||[]){
+   mat.transparent=true;mat.opacity=alpha;mat.depthWrite=alpha>.95;
+  }
+ });
+}
+
 // Screen-space snow starts while the StairMaster is still in view, before the white mist handoff.
 const snowCanvas=document.getElementById('snowstorm'),snowCtx=snowCanvas.getContext('2d');
 let snowW=1,snowH=1,snowDpr=1;
@@ -354,18 +513,18 @@ function draw(now){
  scene.background.copy(dark).lerp(skyBlue,smooth(.43,.69,t)*.85);
  scene.fog.color.copy(fogDark).lerp(fogBlue,smooth(.43,.75,t));
  scene.fog.density=mix(.016,.006,smooth(.45,.8,t));
- const stairScroll=smooth(0,.34,Math.min(t,.34));
- const cycle=stairScroll*17; // Half of V2.9's travel. No autonomous movement.
+ const cycle=stairCycleAt(t); // Half of V2.9's travel. No autonomous movement.
  for(let i=0;i<treads.length;i++){
   const q=((i-cycle)%16+16)%16;
   treads[i].position.set(0,.55+q*.275,2.55-q*.38);
   // Fade in at the returning lower end, fade out before the upper-end wrap.
   const alpha=smooth(.05,1.5,q)*(1-smooth(14,15.95,q));
   treads[i].visible=alpha>.008;
-  treads[i].traverse(o=>{if(o.isMesh){
+  treads[i].traverse(o=>{if(o.isMesh && !stairStoryMeshes.includes(o)){
    for(const mat of (Array.isArray(o.material)?o.material:[o.material]))mat.opacity=alpha;
   }});
  }
+ updateStairStories(t,cycle);
  // Never mutate shared material opacity: depth buffers remain solid at every step.
  for(const m of [M.frame,M.dark,M.metal,M.rubber,M.lime,M.screen,M.snow,M.ice,M.rock,M.stone,trailMat]){
   m.transparent=false;m.opacity=1;m.depthWrite=true;
