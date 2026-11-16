@@ -182,8 +182,34 @@ const pmrem=new THREE.PMREMGenerator(renderer);
 const studioReflection=pmrem.fromEquirectangular(studioTexture).texture;
 pmrem.dispose();studioTexture.dispose();
 
+function makeRefinedCylinderMaterial(kind='metal'){
+ if(kind==='grip') return new THREE.MeshPhysicalMaterial({color:0x1e2a2f,metalness:.18,roughness:.56,clearcoat:.12,clearcoatRoughness:.35,envMap:studioReflection,envMapIntensity:.75});
+ if(kind==='roller') return new THREE.MeshPhysicalMaterial({color:0x8fa2ab,metalness:.92,roughness:.22,clearcoat:.34,clearcoatRoughness:.18,envMap:studioReflection,envMapIntensity:1.2});
+ if(kind==='bolt') return new THREE.MeshPhysicalMaterial({color:0xc8d5db,metalness:.96,roughness:.18,clearcoat:.48,clearcoatRoughness:.14,envMap:studioReflection,envMapIntensity:1.32});
+ return new THREE.MeshPhysicalMaterial({color:0xb9c8cf,metalness:.95,roughness:.2,clearcoat:.52,clearcoatRoughness:.16,envMap:studioReflection,envMapIntensity:1.28});
+}
+function refineStairmasterCylinders(root){
+ root.traverse(o=>{
+  if(!o.isMesh) return;
+  const n=(o.name||'').toLowerCase();
+  if(!/(handrail|handle|support|roller|rail_bolt|frame_front|frame_upper)/.test(n)) return;
+  if(o.geometry && o.geometry.computeVertexNormals) o.geometry.computeVertexNormals();
+  let kind='metal';
+  if(/inner_handle|cross/.test(n)) kind='grip';
+  else if(/roller/.test(n)) kind='roller';
+  else if(/bolt/.test(n)) kind='bolt';
+  const replacement=makeRefinedCylinderMaterial(kind);
+  replacement.flatShading=false;
+  replacement.side=THREE.FrontSide;
+  replacement.needsUpdate=true;
+  if(Array.isArray(o.material)) o.material=o.material.map(()=>replacement.clone());
+  else o.material=replacement;
+  o.castShadow=true; o.receiveShadow=true;
+ });
+}
+
 function box(parent,w,h,d,x,y,z,mat){let m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);parent.add(m);return m}
-function tube(parent,a,b,r,mat){let dir=new THREE.Vector3().subVectors(b,a);let m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,dir.length(),12),mat);m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());parent.add(m);return m}
+function tube(parent,a,b,r,mat){let dir=new THREE.Vector3().subVectors(b,a);let m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,dir.length(),24),mat);m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());parent.add(m);return m}
 function P(x,y,z){return new THREE.Vector3(x,y,z)}
 const treads=[], modelGroup=new THREE.Group();gym.add(modelGroup);
 const modelLoader=new GLTFLoader();
@@ -212,6 +238,7 @@ const assetReady=Promise.all([glb('./assets/models/stairmaster-frame.glb'),glb('
  tex.colorSpace=THREE.SRGBColorSpace;
  const screen=new THREE.Mesh(new THREE.PlaneGeometry(1.06,.40),new THREE.MeshBasicMaterial({map:tex,transparent:false,depthWrite:true,side:THREE.DoubleSide}));
  screen.position.set(0,5.74,-2.426);modelGroup.add(screen);
+ refineStairmasterCylinders(modelGroup);
  document.querySelector('#asset-status').textContent='3D StairMaster loaded';setTimeout(()=>{const e=document.querySelector('#asset-status');if(e)e.style.opacity='0';},1600);
 }).catch(err=>{console.error('Could not load dedicated 3D assets:',err);document.querySelector('#asset-status').textContent='StairMaster assets could not load. Please serve the complete folder over HTTP.';document.querySelector('#asset-status').style.opacity='1';document.querySelector('#asset-status').style.color='#ffb2a3';});
 for(let i=0;i<20;i++){let x=(i%2?1:-1)*(7+i%5*2);box(gym,.16,4+Math.random()*3,.16,x,2,(-i%9)*5,M.dark)}

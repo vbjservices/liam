@@ -1,7 +1,3 @@
-# THE ASCENT V5.9 — Summit Story Orbit
+# THE ASCENT V6.0
 
-From V5.8. When the summit story begins to scroll upward, the summit camera makes a smooth counterclockwise quarter-turn (90°) around Liam. The aim shifts slightly left to frame Liam and the flag on the right of the screen so the text remains legible on the left.
-
-All prior camera choreography, staircase text, summit character, model files, console-display.png and the scroll story are retained.
-
-Archive is root-relative with `index.html` at the root. Three.js still uses CDN modules and should be served over HTTP(S).
+Refinement pass focused on the StairMaster cylinders and tubular components. Handrails, rollers, supports and handles now use smoother shading and more realistic metallic / grip materials while preserving the rest of the site.
