@@ -49,6 +49,16 @@
 </div>
 </div></div>
 <section class="contact" id="contact"><div><div class="eyebrow">BE PART OF THE STORY</div><h2>LET'S<br><span>CLIMB.</span></h2><p>Want to support the challenge, collaborate, share a story, or just say hello? Every great ascent has people behind it.</p></div><form id="contact-form"><label>Your name<input required maxlength="100" name="name" placeholder="Your name" autocomplete="name"></label><label>Email address<input required type="email" maxlength="200" name="email" placeholder="you@example.com" autocomplete="email"></label><label>Your message<textarea required maxlength="2000" rows="5" name="message" placeholder="Tell us what's on your mind..."></textarea></label><button type="submit">SEND A MESSAGE ↗</button><p class="form-note">Demo: this opens your email application. Connect a form service before publishing.</p></form></section></main><footer class="foot"><strong>THE ASCENT © 2026</strong><span>ONE STEP CLOSER TO THE TOP OF THE WORLD.</span></footer>
-<script>setTimeout(()=>{const l=document.getElementById("loader");if(l){l.classList.add("hide");setTimeout(()=>l.remove(),850)}},6500)</script>
+<script>
+// Never expose the decorative fallback when assets are still loading.
+// In case the module fails to start, display an actionable loading error instead.
+setTimeout(() => {
+  const loader=document.getElementById('loader');
+  if(loader && !loader.classList.contains('hide')){
+    const message=loader.querySelector('small');
+    if(message)message.textContent='STILL LOADING · CHECK YOUR CONNECTION OR RELOAD';
+  }
+},15000);
+</script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
 <script type="module" src="./js/main.js"></script><script type="module" src="./js/contact.js"></script><div id="asset-status" role="status" style="position:fixed;bottom:6px;left:10px;z-index:105;font:10px Arial,sans-serif;color:#b9c9c9;opacity:.5;pointer-events:none">Loading 3D model...</div></body></html>

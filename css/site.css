@@ -111,3 +111,8 @@ header{height:74px;position:fixed;z-index:90;inset:0 0 auto;display:flex;align-i
   #summit-scrim{background:linear-gradient(90deg,rgba(4,13,19,.86),rgba(4,13,19,.60) 75%,rgba(4,13,19,.38))}
 }
 
+
+/* The original illustrated backup can flash during WebGL buffer reallocations.
+   Keep an opaque stage colour while real 3D assets are loading instead. */
+.fallback{display:none!important;}
+#three{background:#0b171b;display:block;}

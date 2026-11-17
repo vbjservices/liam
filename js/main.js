@@ -6,8 +6,21 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { AdaptiveQuality } from './quality.js';
 import { FrameDiagnostics } from './diagnostics.js';
 import { createRenderScheduler } from './scheduler.js';
+import { batchStairStep } from './step-batching.js';
 import { createCameraSampler } from './camera-path.js';
-const canvas=document.querySelector('#three');const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;
+const canvas=document.querySelector('#three');
+let firstFrameDrawn=false;
+let firstUsableFramePending=false;
+let essentialAssetsSettled=false;
+const loadingElement=document.getElementById('loader');
+const fallbackElement=document.getElementById('fallback');
+if (fallbackElement) fallbackElement.style.visibility='hidden';
+function dismissLoader(){
+  if(!loadingElement || loadingElement.classList.contains('hide'))return;
+  loadingElement.classList.add('hide');
+  window.setTimeout(()=>loadingElement.remove(),850);
+}
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;
 const quality=new AdaptiveQuality(renderer);
 const diagnostics=new FrameDiagnostics(renderer);
 const scene=new THREE.Scene();scene.background=new THREE.Color('#0b171b');scene.fog=new THREE.FogExp2('#101d22',.013);
@@ -72,17 +85,27 @@ const fontLoader=new FontLoader();
 // Rollback to proven V4.3 3D typography. No generated Hybrid B font geometry.
 const fontReady=new Promise((resolve,reject)=>fontLoader.load('https://cdn.jsdelivr.net/npm/three@0.170.0/examples/fonts/helvetiker_bold.typeface.json',resolve,undefined,reject));
 function glb(url){return new Promise((resolve,reject)=>modelLoader.load(url,g=>resolve(g.scene),undefined,reject))}
+let displayTextureLoaded=false;
 const assetReady=Promise.all([glb('./assets/models/stairmaster-frame.glb'),glb('./assets/models/stairmaster-step.glb')]).then(([frame,step])=>{
  frame.name='Dedicated StairMaster frame';modelGroup.add(frame);
+ // Merge 27 pieces into one tread draw call, retaining its vertex colours.
+ let treadTemplate=step;
+ try {
+  const result=batchStairStep(step);
+  treadTemplate=result.mesh;
+  console.info(`THE ASCENT: batched ${result.components} tread parts into one mesh`);
+ } catch(error) {
+  console.warn('Tread batching unavailable; using original step meshes',error);
+ }
  for(let i=0;i<16;i++){
-  const g=step.clone(true);g.name='Animated StairMaster step '+(i+1);
-  // Independent materials let each tread soften at either end without affecting its neighbours.
+  const g=treadTemplate.clone(true);g.name='Animated StairMaster step '+(i+1);
   g.traverse(o=>{if(o.isMesh){
     const prepare=m=>{const copy=m.clone();copy.transparent=true;copy.depthWrite=false;copy.opacity=1;return copy};
     o.material=Array.isArray(o.material)?o.material.map(prepare):prepare(o.material);
   }});
-  g.userData.stepMaterials=[];g.traverse(o=>{if(o.isMesh){g.userData.stepMaterials.push(...(Array.isArray(o.material)?o.material:[o.material]));}});
-  modelGroup.add(g);treads.push(g)
+  g.userData.stepMaterials=[];
+  g.traverse(o=>{if(o.isMesh)g.userData.stepMaterials.push(...(Array.isArray(o.material)?o.material:[o.material]));});
+  modelGroup.add(g);treads.push(g);
  }
  // Material values in the GLBs are opaque; no alpha blending during the scene handoff.
  modelGroup.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;
@@ -90,14 +113,20 @@ const assetReady=Promise.all([glb('./assets/models/stairmaster-frame.glb'),glb('
   mats.forEach(m=>{m.side=THREE.FrontSide;if(!o.parent?.name?.startsWith('Animated StairMaster step'))m.depthWrite=true});
  }});
  // PNG display texture is a separate editable asset, overlaid on the 3D console.
- const tex=new THREE.TextureLoader().load('./assets/textures/console-display.webp');
+ const tex=new THREE.TextureLoader().load('./assets/textures/console-display.webp',()=>{
+  displayTextureLoaded=true;
+  scheduler.invalidate();
+ },undefined,(error)=>{
+  console.warn('Console display texture failed to load',error);
+  displayTextureLoaded=true; // avoid blocking the entire page when network fails
+ });
  tex.colorSpace=THREE.SRGBColorSpace;
  const screen=new THREE.Mesh(new THREE.PlaneGeometry(1.06,.40),new THREE.MeshBasicMaterial({map:tex,transparent:false,depthWrite:true,side:THREE.DoubleSide}));
  screen.position.set(0,5.74,-2.426);modelGroup.add(screen);
  refineStairmasterCylinders(modelGroup);
  requestAnimationFrame(()=>scheduler.invalidate());
  document.querySelector('#asset-status').textContent='3D StairMaster loaded';setTimeout(()=>{const e=document.querySelector('#asset-status');if(e)e.style.opacity='0';},1600);
-}).catch(err=>{console.error('Could not load dedicated 3D assets:',err);document.querySelector('#asset-status').textContent='StairMaster assets could not load. Please serve the complete folder over HTTP.';document.querySelector('#asset-status').style.opacity='1';document.querySelector('#asset-status').style.color='#ffb2a3';});
+}).catch(err=>{displayTextureLoaded=true;console.error('Could not load dedicated 3D assets:',err);document.querySelector('#asset-status').textContent='StairMaster assets could not load. Please serve the complete folder over HTTP.';document.querySelector('#asset-status').style.opacity='1';document.querySelector('#asset-status').style.color='#ffb2a3';});
 for(let i=0;i<20;i++){let x=(i%2?1:-1)*(7+i%5*2);box(gym,.16,4+Math.random()*3,.16,x,2,(-i%9)*5,M.dark)}
 const floor=box(gym,100,.1,70,0,-.19,0,M.dark);const lines=[];for(let i=-8;i<=8;i++){const l=box(gym,.012,.011,60,i*4,-.12,0,M.metal);l.material=M.metal;lines.push(l)}
 // Terrain and distant ranges are actual 3D triangle meshes (not flat pictures).
@@ -315,10 +344,17 @@ const keypoints=[
  {t:.27,pos:[.10,3.58,5.08],look:[0,3.14,-1.26],fov:34},
  // Start aiming at the opening beneath the console instead of peeling past the machine.
  {t:.34,pos:[.38,3.62,3.08],look:[0,3.72,-2.65],fov:55},
- // Camera now threads through the slot between the moving stairs and console housing.
- {t:.43,pos:[.08,4.22,.58],look:[0,4.15,-3.80],fov:61},
- // Exit the StairMaster by pushing through the gap and into the snow-transition tunnel.
- {t:.49,pos:[.12,5.88,-6.8],look:[0,6.48,-22],fov:66},
+ // V7.3: rise above the upper stairs and align with the centre of the
+ // physical Everest goal screen. The first part of the StairMaster journey
+ // is unchanged; the new route starts only after the final stair message.
+ {t:.39,pos:[.16,4.98,1.15],look:[0,5.74,-2.426],fov:49},
+ {t:.435,pos:[.04,5.69,-.22],look:[0,5.74,-2.426],fov:46},
+ // Glide straight INTO the display (rather than into the gap below it).
+ // The mist/snow wipe conceals the moment the camera crosses its plane.
+ {t:.475,pos:[.005,5.74,-1.91],look:[0,5.74,-2.426],fov:43},
+ {t:.49,pos:[0,5.74,-2.39],look:[0,5.74,-8],fov:48},
+ // Continue in the same forward direction as the mountain emerges from mist.
+ {t:.56,pos:[.65,7.6,-12.5],look:[0,7.6,-26],fov:66},
  {t:.64,pos:[4.6,13.6,-25],look:[ascentX(-48),ascentY(-48),-48],fov:64},
  {t:.76,pos:[4.0,28,-75],look:[ascentX(-121),ascentY(-121),-121],fov:55},
  {t:.87,pos:[ascentX(-148)+10,ascentY(-148)+8,-141],look:[ascentX(-186),ascentY(-186)+1.4,-186],fov:51},
@@ -327,8 +363,8 @@ const keypoints=[
  // Final hero shot: behind Liam, close to the tip, so he reads as standing on the highest point.
  {t:1,pos:[summitX+2.2,summitY+2.55,summitZ+8.8],look:[summitX-.15,summitY+1.95,summitZ-4.2],fov:39}
  ];
-// Path and interpolation are isolated for maintainability. The coordinate data above is unchanged.
-const sample=createCameraSampler(keypoints,{clamp,smooth,mix,lastGymKey:6,flowing:true});
+// Camera path is isolated for maintainability. V7.3 replaces only the under-console exit with a screen-centred portal move.
+const sample=createCameraSampler(keypoints,{clamp,smooth,mix,lastGymKey:8,flowing:true});
 
 // V3.2: upright, world-space messages floating above real StairMaster steps.
 // The labels are separate XY planes (not projected flat onto the treads).
@@ -520,13 +556,15 @@ function paintSnow(now,amount){
  snowCtx.globalAlpha=1;
 }
 sizeSnow();
-const journey=document.querySelector('#journey'),texts=[...document.querySelectorAll('.stagecopy')],counter=document.querySelector('#counter-num'),progress=document.querySelector('#progress'),hint=document.querySelector('#scrollhint');let current=0,target=0,prev=performance.now();const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;function resize(){let w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);quality.resize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();sizeSnow()}addEventListener('resize',resize);resize();const summitStory=document.getElementById('summit-story'),summitScrim=document.getElementById('summit-scrim');
+let lastScrollActivity=performance.now();
+const journey=document.querySelector('#journey'),texts=[...document.querySelectorAll('.stagecopy')],counter=document.querySelector('#counter-num'),progress=document.querySelector('#progress'),hint=document.querySelector('#scrollhint');let current=0,target=0,prev=performance.now();const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;function resize(){let w=innerWidth,h=innerHeight;quality.resize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();sizeSnow()}addEventListener('resize',resize);resize();const summitStory=document.getElementById('summit-story'),summitScrim=document.getElementById('summit-scrim');
 const SUMMIT_SCROLL_SCREENS=2.35;
 let summitStoryProgress=0;
 // Orbit should finish only when the beginning of the first summit story block
 // reaches the upper reading area (rather than while it is still near the bottom).
 let summitOrbitFinishProgress=.55;
 function onScroll(){
+ lastScrollActivity=performance.now();
  const rect=journey.getBoundingClientRect();
  const scrolled=Math.max(0,-rect.top);
  // Keep the established camera coordinates, but remap the under-console scroll interval.
@@ -670,11 +708,25 @@ function draw(now){
  }else{
   camera.position.set(...openingPos);camera.lookAt(new THREE.Vector3(...openingLook));
  }
- camera.fov=p.fov+(innerWidth<800?9:0);camera.updateProjectionMatrix();
+ const nextFov=p.fov+(innerWidth<800?9:0);
+ if(Math.abs(camera.fov-nextFov)>0.001){camera.fov=nextFov;camera.updateProjectionMatrix();}
  // World snow animates only while the mountain scene is active.
  renderer.render(scene,camera);
+ if(!firstFrameDrawn){
+   firstFrameDrawn=true;
+   Promise.allSettled([assetReady,fontReady]).then(()=>{
+     essentialAssetsSettled=true;
+     scheduler.invalidate();
+   });
+ }
+ // The fallback is never shown. Remove the overlay only after all visible assets
+ // have settled and at least one complete frame has actually been rendered.
+ if(essentialAssetsSettled && displayTextureLoaded && !firstUsableFramePending){
+   firstUsableFramePending=true;
+   requestAnimationFrame(dismissLoader);
+ }
  const sampleResult=diagnostics.sample(now,quality.pixelRatio,quality.preset);
- quality.observe(sampleResult);
+ quality.observe(sampleResult,{scrolling:performance.now()-lastScrollActivity<1600});
 }
 
 const scheduler=createRenderScheduler(draw,{
@@ -688,5 +740,5 @@ addEventListener('scroll',requestSceneUpdate,{passive:true});
 addEventListener('resize',requestSceneUpdate);
 document.addEventListener('visibilitychange',()=>{prev=performance.now();scheduler.invalidate();});
 window.addEventListener('pageshow',()=>{prev=performance.now();scheduler.invalidate();});
-document.querySelector('#loader').classList.add('hide');setTimeout(()=>document.querySelector('#loader')?.remove(),850);
+// Loader is dismissed after the first frame and essential asset requests settle.
 

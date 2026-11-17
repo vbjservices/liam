@@ -1,54 +1,43 @@
-/** Adaptive pixel density for low-power devices. Does not alter scene geometry. */
+/**
+ * Conservative pixel density adaptation. Scaling the WebGL drawing buffer on a
+ * moving scene can briefly clear the canvas and cost a frame, so quality is
+ * lowered only after repeated sustained slow samples. Never bounce back up
+ * during a session; reload resets to the normal preset.
+ */
 export class AdaptiveQuality {
   constructor(renderer) {
-    this.renderer = renderer;
-    this.nativeDpr = Math.min(window.devicePixelRatio || 1, 1.75);
-    this.isMobile = window.matchMedia('(pointer: coarse)').matches;
-    this.pixelRatio = Math.min(this.nativeDpr, this.isMobile ? 1.2 : 1.5);
-    this.minDpr = Math.min(this.pixelRatio, this.isMobile ? .8 : 1);
-    this.preset = this.isMobile ? 'mobile' : 'desktop';
-    this.flagFrameInterval = this.isMobile ? 1000 / 24 : 1000 / 30;
-    this.slowWindows = 0;
-    this.goodWindows = 0;
-    this.framesObserved = 0;
-    this.lastChange = 0;
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
+    this.renderer=renderer;
+    this.nativeDpr=Math.min(window.devicePixelRatio||1,1.75);
+    this.isMobile=window.matchMedia('(pointer: coarse)').matches;
+    this.pixelRatio=Math.min(this.nativeDpr,this.isMobile?1.2:1.5);
+    this.minDpr=Math.min(this.pixelRatio,this.isMobile?0.8:1);
+    this.preset=this.isMobile?'mobile':'desktop';
+    this.flagFrameInterval=this.isMobile?1000/24:1000/30;
+    this.slowWindows=0;
+    this.lastChange=performance.now();
+    this.width=innerWidth;
+    this.height=innerHeight;
     renderer.setPixelRatio(this.pixelRatio);
   }
-
-  resize(width, height) {
-    this.width = width;
-    this.height = height;
-    this.renderer.setPixelRatio(this.pixelRatio);
-    this.renderer.setSize(width, height, false);
+  resize(width,height){
+    this.width=width;this.height=height;
+    // Avoid reallocating the GPU drawing buffer twice for a single resize.
+    this.renderer.setSize(width,height,false);
   }
-
-  observe(sample) {
-    // Only tune from sustained animation samples, not long gaps in demand rendering.
-    if (!sample || !sample.continuous || !Number.isFinite(sample.fps)) return;
-    if (sample.fps < (this.isMobile ? 20 : 25)) {
-      this.slowWindows++;
-      this.goodWindows = 0;
-    } else if (sample.fps >= (this.isMobile ? 23 : 28)) {
-      this.goodWindows++;
-      this.slowWindows = 0;
+  observe(sample, {scrolling=false}={}) {
+    if(!sample?.continuous || !Number.isFinite(sample.fps)) return;
+    // Count repeated slow windows while moving, but defer any buffer resize
+    // until scrolling settles. This avoids a visible flash during the journey.
+    if(sample.fps<(this.isMobile?18:24))this.slowWindows++;
+    else this.slowWindows=Math.max(0,this.slowWindows-1);
+    if(scrolling || this.slowWindows<4 || performance.now()-this.lastChange<12000)return;
+    if(this.pixelRatio>this.minDpr+.04){
+      const next=Math.max(this.minDpr,Math.round((this.pixelRatio-.10)*100)/100);
+      this.pixelRatio=next;
+      this.renderer.setPixelRatio(next);
+      // setPixelRatio triggers a resize and internally resets the drawing buffer.
+      this.lastChange=performance.now();
     }
-    const now = performance.now();
-    if (now - this.lastChange < 8000) return;
-    if (this.slowWindows >= 3 && this.pixelRatio > this.minDpr + .04) {
-      this.setDpr(Math.max(this.minDpr, this.pixelRatio - .15));
-    } else if (this.goodWindows >= 7 && this.pixelRatio < this.nativeDpr - .04) {
-      this.setDpr(Math.min(this.nativeDpr, this.pixelRatio + .10));
-    }
-  }
-
-  setDpr(next) {
-    this.pixelRatio = Math.round(next * 100) / 100;
-    this.renderer.setPixelRatio(this.pixelRatio);
-    this.renderer.setSize(this.width, this.height, false);
-    this.lastChange = performance.now();
-    this.slowWindows = 0;
-    this.goodWindows = 0;
+    this.slowWindows=0;
   }
 }

@@ -26,3 +26,18 @@ Recommended checks (desktop, recent phone, older laptop): open the site over HTT
 
 ## Reload behavior (V7.2)
 Refreshing the page now returns to the beginning of the journey. Native back/forward navigation and normal in-page links keep their usual behavior. No change to 3D modules or assets.
+
+## V7.3 — Fly into the goal display
+
+The end of the StairMaster camera path is now aligned with the Everest screen at world coordinates `(0, 5.74, -2.426)`. After “EVERY STEP COUNTS”, the camera glides upward to face the screen, approaches its centre, and crosses its plane during the existing snow/mist wipe. The mountain camera sequence resumes beyond the screen. Nothing in the model, console artwork, type, summit, or contact section has changed.
+
+
+## V7.4 stability improvements
+- Prevents the illustrated fallback appearing during GPU buffer changes and loading handoffs.
+- Loader stays until the first frame and core asset/font requests complete.
+- Batches all component meshes of each StairMaster tread into one geometry where possible. Preserves tread vertex colours, individual step movement, and fade, with automatic fallback to original meshes if batching fails.
+- Stabilizes adaptive quality: no pixel-ratio changes while scrolling, only steps down after repeated slow idle samples, and never oscillates upward during the session.
+- Avoids duplicate canvas resizing and redundant camera projection matrix updates.
+- Keeps the snowstorm, mountain snowfall, scroll-driven steps, and summit flag animation.
+
+Note: performance HUD FPS changes between idle and scroll because idle rendering is throttled. GPU frame time cannot be inferred reliably from FPS alone.
