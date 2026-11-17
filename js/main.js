@@ -201,6 +201,135 @@ for(let i=0;i<142;i++){
   box(pathGroup,.23,.12,.025,mx+.12,my+.5,z,M.lime);
  }
 }
+
+// Lightweight Everest-style mini base camp near the first trail marker after the
+// StairMaster transition. Prayer flags are iconic at Everest/Base Camp and add
+// recognisable atmosphere without introducing heavy new assets.
+const campPalette=['#2b55d6','#f0d44d','#d64037','#49a95f','#f3f4f6'];
+function terrainNormal(x,z,eps=.42){
+ const dx=(terrainHeight(x+eps,z)-terrainHeight(x-eps,z))/(2*eps);
+ const dz=(terrainHeight(x,z+eps)-terrainHeight(x,z-eps))/(2*eps);
+ return new THREE.Vector3(-dx,1,-dz).normalize();
+}
+function makePrayerFlagLine(parent,start,end,drop=.28,count=14){
+ const mid=start.clone().lerp(end,.5); mid.y-=drop;
+ const curve=new THREE.QuadraticBezierCurve3(start,mid,end);
+ const rope=new THREE.Mesh(
+  new THREE.TubeGeometry(curve,24,.012,5,false),
+  new THREE.MeshStandardMaterial({color:0x6c767b,roughness:.88,metalness:.18})
+ );
+ parent.add(rope);
+ for(let i=0;i<count;i++){
+  const t=(i+.5)/(count+1);
+  const p=curve.getPoint(t);
+  const tangent=curve.getTangent(t).normalize();
+  const color=campPalette[i%campPalette.length];
+  // Fit each pennant into its own section of the rope; a deliberate gap
+  // avoids overlapping coplanar triangles (z-fighting when camera moves).
+  const w=Math.min(.15,curve.getLength()/(count+1)*.68),h=.12;
+  const flagGeo=new THREE.BufferGeometry();
+  const verts=new Float32Array([
+   0,0,0,
+   w,0,0,
+   w*.92,-h,0,
+   0,0,0,
+   w*.92,-h,0,
+   0,-h*.88,0
+  ]);
+  flagGeo.setAttribute('position',new THREE.BufferAttribute(verts,3));
+  flagGeo.computeVertexNormals();
+  const flag=new THREE.Mesh(
+   flagGeo,
+   new THREE.MeshStandardMaterial({color,roughness:.92,metalness:.02,side:THREE.DoubleSide})
+  );
+  flag.position.copy(p).add(new THREE.Vector3(0,-.018,0));
+  // Plane local X runs along the rope tangent: no intersections with adjacent flags.
+  flag.rotation.y=Math.atan2(-tangent.z,tangent.x);
+  flag.rotation.z=.03*Math.sin(i*.85);
+  parent.add(flag);
+ }
+}
+function makeTent(parent,x,y,z,length,width,height,colorHex,rotY=0){
+ const tent=new THREE.Group();
+ tent.position.set(x,y,z); tent.rotation.y=rotY; parent.add(tent);
+ const shape=new THREE.Shape();
+ shape.moveTo(-length*.5,0);
+ shape.lineTo(0,height);
+ shape.lineTo(length*.5,0);
+ shape.lineTo(-length*.5,0);
+ const shellGeo=new THREE.ExtrudeGeometry(shape,{depth:width,bevelEnabled:false,steps:1});
+ shellGeo.translate(0,0,-width*.5);
+ const shell=new THREE.Mesh(
+  shellGeo,
+  new THREE.MeshStandardMaterial({color:colorHex,roughness:.78,metalness:.04})
+ );
+ tent.add(shell);
+ const door=new THREE.Mesh(
+  new THREE.PlaneGeometry(width*.30,height*.45),
+  new THREE.MeshStandardMaterial({color:0x1c2529,roughness:.85,side:THREE.DoubleSide})
+ );
+ door.position.set(0,height*.33,width*.5+.002); tent.add(door);
+ const floor=new THREE.Mesh(
+  new THREE.PlaneGeometry(length*.92,width*.9),
+  new THREE.MeshStandardMaterial({color:0x86979d,roughness:1,side:THREE.DoubleSide})
+ );
+ floor.rotation.x=-Math.PI/2; floor.position.y=.01; tent.add(floor);
+ const ridge=new THREE.Mesh(
+  new THREE.BoxGeometry(length*.04,height*.06,width*.96),
+  new THREE.MeshStandardMaterial({color:0xcfd8dc,roughness:.7})
+ );
+ ridge.position.set(0,height*.98,0); tent.add(ridge);
+ return tent;
+}
+function createBaseCamp(){
+ const campZ=-37.45; // align with the first visible yellow marker after the transition
+ const trailCenter=ascentX(campZ);
+ const flagX=trailCenter+1.48;
+ const campX=flagX-1.25; // move the camp a little further left of the yellow flag, still hugging the trail edge
+ const campY=terrainHeight(campX,campZ);
+ const camp=new THREE.Group();
+ camp.position.set(campX,campY+.01,campZ);
+ camp.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),terrainNormal(campX,campZ));
+ pathGroup.add(camp);
+ const layout=new THREE.Group();
+ layout.rotation.y=.22;
+ camp.add(layout);
+
+
+ // Small embedded rocks / anchors.
+ for(const [x,z,s,ry] of [[-1.02,-.36,.22,.55],[.78,-.28,.24,-.28],[.42,.62,.18,.45],[-1.08,.56,.17,-.22]]){
+  const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(s,0),M.rock);
+  rock.position.set(x,s*.18,z); rock.scale.set(1,.5,1.08); rock.rotation.set(s*1.6,ry,s*.8); layout.add(rock);
+ }
+
+ // Pointy low-poly ridge tents. The two doors face diagonally toward the
+ // approaching camera, with only a subtle inward angle—not face-to-face.
+ // Raise the red tent slightly and tip its left edge up to meet the snow slope.
+ const redTent=makeTent(layout,-.89,.090,.10,.86,.5,.3,0xd6665e,.53);
+ redTent.rotation.z=-.055;
+ makeTent(layout,.18,.015,-.06,.96,.56,.34,0xdac451,-.45);
+
+ // Poles and colourful prayer flags.
+ const poleMat=new THREE.MeshStandardMaterial({color:0x59676d,roughness:.58,metalness:.34});
+ const poleA=new THREE.Mesh(new THREE.CylinderGeometry(.018,.02,1.12,8),poleMat);
+ const poleB=new THREE.Mesh(new THREE.CylinderGeometry(.018,.02,1.26,8),poleMat);
+ const poleC=new THREE.Mesh(new THREE.CylinderGeometry(.016,.018,.9,8),poleMat);
+ poleA.position.set(-.96,.56,-.46); poleB.position.set(.76,.64,.32); poleC.position.set(-.04,.46,.72);
+ layout.add(poleA,poleB,poleC);
+ makePrayerFlagLine(layout,new THREE.Vector3(-.96,1.08,-.46),new THREE.Vector3(.76,1.22,.32),.32,14);
+ makePrayerFlagLine(layout,new THREE.Vector3(-.04,.88,.72),new THREE.Vector3(.76,1.16,.32),.16,7);
+
+ // A small sign-like boulder hinting at base camp.
+ const sign=new THREE.Mesh(new THREE.DodecahedronGeometry(.34,0),M.stone);
+ sign.position.set(.70,.17,-.72); sign.scale.set(1.18,.58,.88); sign.rotation.set(.09,-.36,.1); layout.add(sign);
+ const paint=new THREE.Mesh(
+  new THREE.PlaneGeometry(.34,.08),
+  new THREE.MeshBasicMaterial({color:0xe05c4c,transparent:true,opacity:.9,side:THREE.DoubleSide})
+ );
+ paint.position.set(.76,.26,-.56); paint.rotation.set(-.03,-.36,.01); layout.add(paint);
+ return camp;
+}
+createBaseCamp();
 // Finale: trail climbs left onto the highest exposed pinnacle, with open air
 // on both sides and a drop-off beyond the tip.
 const summitZ=-212,summitX=ascentX(summitZ),summitY=ascentY(summitZ);
@@ -240,9 +369,7 @@ function organicRock(parent, center, radius, squish, seed, snowy=false){
 // Narrow high crown with textured stone falling away below Liam.
 const summitBaseRock=organicRock(summit,[0,-7.7,-.30],7.1,[.67,1.03,.79],.7,false);
 const summitCrownRock=organicRock(summit,[.12,-.30,-.30],1.01,[.75,.33,.70],2.2,false);
-// The final access spur remains attached to the ridgeline and disappears into the crown.
-const accessLedge=new THREE.Mesh(new THREE.BoxGeometry(1.1,.22,3.6),summitSnow);
-accessLedge.position.set(0,-.74,1.55);accessLedge.rotation.x=-.32;summit.add(accessLedge);
+// The former rectangular snow access ledge was removed: it appeared as an unnatural white slab near Liam.
 // Smooth rock outcrops, embedded rather than triangular spikes.
 for(let i=0;i<10;i++){
  const a=i*Math.PI*2/10,r=1.95+(i%3)*.52;
@@ -598,17 +725,25 @@ function onScroll(){
  progress.style.width=(clamp(scrolled/(cameraTravel+summitTravel),0,1)*100)+'%';
  hint.style.opacity=String(1-smooth(.04,.17,target));
  counter.textContent=String(Math.floor(target*8849)).padStart(4,'0');
+ // Start the first mountain caption immediately after the console-to-Everest
+ // white-out clears, while keeping the later chapter spacing intact.
+ const mountainCaptionTime=target-.09;
+ // Let the first caption fade up promptly once the white-out has finished.
+ const captionsVisible=smooth(.596,.614,target);
  texts.forEach((e,i)=>{
  const from=+e.dataset.from,to=+e.dataset.to,span=Math.max(.01,to-from);
- const entry=smooth(from-.075,from+.035,target),leave=smooth(to-.075,to+.025,target);
+ const entry=i===0
+  ? smooth(from-.09,from-.035,mountainCaptionTime)
+  : smooth(from-.075,from+.035,mountainCaptionTime);
+ const leave=smooth(to-.075,to+.025,mountainCaptionTime);
  const fade=entry*(1-leave);
  // Alternating entrances: odd chapters arrive from the right, even from the left.
  const direction=i%2===0?-1:1;
  const entranceX=direction*(1-entry)*Math.min(innerWidth*.26,245);
  const departureX=direction*leave*Math.min(innerWidth*.20,155);
- const glide=(target-from)/span-.5;
+ const glide=(mountainCaptionTime-from)/span-.5;
  const parallaxY=(1-entry)*28+glide*-24+leave*-16;
- e.style.opacity=String(fade*(1-smooth(0,.035,summitStoryProgress)));
+ e.style.opacity=String(fade*captionsVisible*(1-smooth(0,.035,summitStoryProgress)));
  e.style.setProperty('--story-x',(entranceX+departureX)+'px');
  e.style.setProperty('--story-y',parallaxY+'px');
  e.style.setProperty('--story-scale',String(.955+.045*entry-.015*leave));

@@ -41,3 +41,31 @@ The end of the StairMaster camera path is now aligned with the Everest screen at
 - Keeps the snowstorm, mountain snowfall, scroll-driven steps, and summit flag animation.
 
 Note: performance HUD FPS changes between idle and scroll because idle rendering is throttled. GPU frame time cannot be inferred reliably from FPS alone.
+
+## V7.5 — Mountain caption entrance
+
+Delays the mountain chapter captions to begin after the white-out has cleared. Keeps the same scene geometry, scroll path, snowstorm, logo, character, and camera. Uses a uniform +12.5%-of-camera-progress offset to preserve the original caption pacing, plus a soft reveal guard around camera progress 0.625–0.705.
+
+
+## V7.6 update
+- Added a lightweight Everest-style mini base camp near the first trail marker after the StairMaster transition.
+- Added colorful prayer flags and two low-poly tents without introducing external assets.
+- Adjusted the first mountain text to fade in right after the transition clears.
+
+
+## V7.7 update
+- Refined the Everest mini base camp so it sits on the mountain slope instead of on a thin floating plateau.
+- Replaced dome tents with more pointy ridge-tent shapes.
+- Rebuilt the prayer flags with proper multicolour pennants inspired by Everest base-camp flags.
+- Slightly delayed the first mountain text fade so it starts right after the transition clears.
+
+
+## V7.8 update
+- Moved the mini base camp onto the trail edge, just left of the yellow flag.
+- Removed the visually distracting large floating slice/plateau behind the camp.
+- Kept the pointier tents and Everest-style multicolour prayer flags.
+
+
+## V7.9 update
+- Removed the thin snow patch that could appear as a vertical slice through the camp.
+- Moved the camp further left, still next to the yellow flag on the trail edge.
