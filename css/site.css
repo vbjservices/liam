@@ -95,8 +95,11 @@ header{height:74px;position:fixed;z-index:90;inset:0 0 auto;display:flex;align-i
 #summit-story .summit-text{display:grid;grid-template-columns:1fr 1fr;gap:34px;max-width:720px}
 #summit-story p{font:500 clamp(14px,1.03vw,17px)/1.85 Manrope,Arial,sans-serif;color:#e4eff0;margin:0}
 #summit-story .summit-accent{border-left:2px solid #ddf56c;padding-left:18px;color:#fff}
-#summit-story .summit-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+#summit-story .summit-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:24px;
   border-top:1px solid #ffffff73;padding:30px 0 0}
+/* Every metric owns one equal-width column; value and caption share its centre. */
+#summit-story .summit-metrics > div{min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center}
+
 #summit-story .summit-metrics strong{display:block;font:800 clamp(40px,5vw,78px)/1 'Barlow Condensed',sans-serif;color:#fff;white-space:nowrap}
 #summit-story .summit-metrics span{display:block;margin-top:10px;font:700 10px/1.5 Manrope,Arial,sans-serif;letter-spacing:.13em;color:#dce7e8;text-transform:uppercase}
 #summit-story .summit-close{font:800 11px Manrope,Arial,sans-serif;letter-spacing:.25em;color:#ddf56c;text-transform:uppercase;margin-top:28px}
@@ -107,7 +110,8 @@ header{height:74px;position:fixed;z-index:90;inset:0 0 auto;display:flex;align-i
   #summit-story h2{font-size:clamp(53px,12vw,82px)}
   #summit-story .summit-text{grid-template-columns:1fr;gap:16px}
   #summit-story .summit-block{margin-bottom:16vh;padding-bottom:6vh}
-  #summit-story .summit-metrics{grid-template-columns:1fr 1fr;gap:26px}
+  #summit-story .summit-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 14px}
+  #summit-story .summit-metrics > div:last-child{grid-column:1 / -1}
   #summit-scrim{background:linear-gradient(90deg,rgba(4,13,19,.86),rgba(4,13,19,.60) 75%,rgba(4,13,19,.38))}
 }
 
