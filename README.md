@@ -69,3 +69,84 @@ Delays the mountain chapter captions to begin after the white-out has cleared. K
 ## V7.9 update
 - Removed the thin snow patch that could appear as a vertical slice through the camp.
 - Moved the camp further left, still next to the yellow flag on the trail edge.
+
+
+## V8.0 refinements
+- Turned the red tent 90 degrees counterclockwise and aimed the yellow door toward it.
+- Prayer flags remain static: reduced widths based on rope length and corrected tangent alignment prevent overlapping surfaces and flicker.
+- First mountain chapter fades in faster, just after the white-out has cleared.
+- No changes to camera paths, assets, summit, moving snowfall, or contact form.
+
+
+## V8.1
+Only the red and yellow tent rotations were adjusted for diagonally camera-facing entrances; no other scene or timing changes.
+
+
+## V8.2
+Moved only the red tent 0.33 world units to the left to separate it from the yellow tent. Angles and all other features unchanged.
+
+
+## V8.3 — Summit cleanup
+Removed only the rectangular access ledge (the distracting white slab). Summit rocks, climber, boot grounding, flag, and all other geometry and motion are unchanged.
+
+
+## V8.4
+Red tent only: raised by 0.075 scene units, with a subtle -0.055 rad Z tilt to keep its left edge out of the slope.
+
+
+## V8.5 — Camp introduction (prototype)
+
+The existing camera journey, texts, and summit are preserved. A 1.5-screen-height camp chapter has been inserted near the first yellow trail marker. The camera moves close to a new 3D wooden photo board, with the board framed left and new introduction copy rising at the right; afterwards it returns to the pre-existing camera progression.
+
+**Photo replacement:** Replace `assets/textures/liam-photo-placeholder.webp` with a real 550×700 (or similar portrait-aspect) image using the same filename. No code change needed.
+
+No other assets were replaced. Console artwork, models and external Three.js dependencies are unchanged.
+
+
+Update: camp introduction board reduced in size and repositioned beneath/between the prayer flags. Camera focus retuned for the smaller board.
+
+
+Update: noticeboard moved behind the tents / flag poles and camp focus zoom tightened.
+
+
+## V8.8 Clear camp-board framing
+- Moved the wooden board substantially farther behind the tents and prayer-flag poles.
+- Seated the board posts on the sampled mountain slope.
+- Redirected the close-up camera to approach from the open left side, avoiding tent and flag obstruction.
+- Kept all earlier scenes, captions and scrolling chronology unchanged.
+
+
+## V8.9 cinematic camp passage
+- Board shifted right locally (-1.15 to -0.87); tents and poles unchanged.
+- Camp chapter extended from 1.50 to 2.35 viewport heights, with entry delayed slightly.
+- Camera travels below the prayer flags toward the board in two stages.
+- Right-hand introduction text begins after the closer camera framing settles.
+- Exit merges into a later waypoint on the existing mountain path, avoiding a reverse zoom; original later camera keyframes are preserved.
+- Only `js/main.js` and `css/site.css` changed; retain original local assets.
+
+
+## V9.0 — Counterclockwise camp exit
+The close-up and text entrance are unchanged. From 80% of the camp chapter, the camera makes a counterclockwise arc around Liam's board, turns towards the trail, and rejoins the existing mountain camera route at the exact end of the chapter. The exit no longer interpolates straight backward to a wide camp frame.
+
+## V9.1 revisions
+- Reversed the exit orbit around Liam's camp noticeboard, retaining the original mountain-camera rail.
+- Darkened the camp-only scrim to increase the contrast of the right-side introduction text.
+- Shortened scroll needed for the mountain-to-board camera approach by ~30% inside the camp chapter.
+- Used the user-provided photograph for the noticeboard as `assets/textures/liam-photo.webp`, centre-cropped to a portrait aspect ratio without distortion.
+- The rest of the site and existing assets are unchanged.
+
+
+## V9.2 · Forward orbit handoff
+- Keeps V9.1 camp approach, board photo, text and tint.
+- Adds 0.70 viewport-heights of scroll exclusively for the camp exit arc.
+- Orbits the board with a changing camera height, then turns to look along the trail.
+- Joins the existing mountain rail at a fixed forward waypoint with a cubic Bezier path; no reversing to an earlier viewpoint.
+- Only js/main.js and css/site.css change.
+
+
+## V9.3 — camp scroll timing only
+- Mountain transition -> camp arrival: 20% shorter scroll (earlier StairMaster and scene keypoints retained).
+- Camp arrival -> board close-up: 20% longer scroll for the zoom segment.
+- Board exit orbit: 50% longer scroll, preserving its path and direction.
+- Journey scroll length and internal story anchors are synchronized with these intervals.
+- No model, texture, typography, scene or contact-form changes.

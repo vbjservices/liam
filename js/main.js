@@ -327,9 +327,77 @@ function createBaseCamp(){
   new THREE.MeshBasicMaterial({color:0xe05c4c,transparent:true,opacity:.9,side:THREE.DoubleSide})
  );
  paint.position.set(.76,.26,-.56); paint.rotation.set(-.03,-.36,.01); layout.add(paint);
+ camp.userData.layout=layout;
  return camp;
 }
-createBaseCamp();
+const baseCamp=createBaseCamp();
+const campLayout=baseCamp.userData.layout;
+
+// CAMP INTRODUCTION: a light wooden noticeboard installed below the prayer flags.
+// The portrait is intentionally a replaceable placeholder, never an invented photo.
+// To use a real portrait, replace the WebP asset and keep its filename.
+const campBoardGroup=new THREE.Group();
+// Position the compact noticeboard on the rear edge of the camp, well beyond
+// both prayer-flag lines and the tents. Keep its posts seated on the real slope;
+// do not add a platform or move any existing camp geometry.
+campLayout.add(campBoardGroup);
+const boardLocalX=-.87; // slight rightward shift, still behind the flag poles
+const boardLocalZ=-1.98;
+campLayout.updateMatrixWorld(true);
+const boardGroundProbe=campLayout.localToWorld(new THREE.Vector3(boardLocalX,0,boardLocalZ));
+const campUp=new THREE.Vector3(0,1,0).transformDirection(campLayout.matrixWorld);
+const boardGroundOffset=(terrainHeight(boardGroundProbe.x,boardGroundProbe.z)-boardGroundProbe.y)/Math.max(.3,campUp.y);
+campBoardGroup.position.set(boardLocalX,boardGroundOffset+.015,boardLocalZ);
+campBoardGroup.rotation.y=-.35; // face the left-side close-up camera
+campBoardGroup.scale.setScalar(.22);
+const timber=new THREE.MeshStandardMaterial({color:0x765039,roughness:.92,metalness:0});
+const timberLight=new THREE.MeshStandardMaterial({color:0x9f7450,roughness:.84,metalness:0});
+const timberDark=new THREE.MeshStandardMaterial({color:0x382821,roughness:.98,metalness:0});
+const paperMat=new THREE.MeshStandardMaterial({color:0xe3dac7,roughness:.95,metalness:0});
+// Two posts actually extend into the snow; no floating base/platform.
+for(const px of [-.88,.88]){
+ const post=box(campBoardGroup,.105,2.15,.13,px,.96,-.10,timber);
+ post.rotation.z=px*.025;
+ box(campBoardGroup,.15,.075,.16,px,2.055,-.10,timberLight);
+}
+// Layered timber planks with shallow grooves and a raised frame.
+for(let i=0;i<5;i++){
+ box(campBoardGroup,2.03,.29,.10,0,1.13+i*.286,-.055,i%2?timber:timberLight);
+}
+box(campBoardGroup,2.13,.09,.19,0,2.53,0,timberDark);
+box(campBoardGroup,2.13,.09,.19,0,1.02,0,timberDark);
+box(campBoardGroup,.095,1.50,.17,-1.03,1.79,0,timberDark);
+box(campBoardGroup,.095,1.50,.17,1.03,1.79,0,timberDark);
+// A paper mount inside the wooden frame. The portrait has its own easy-to-swap asset.
+box(campBoardGroup,.88,1.23,.025,-.51,1.78,.018,paperMat);
+const liamPortrait=new THREE.TextureLoader().load('./assets/textures/liam-photo.webp',()=>scheduler.invalidate());
+liamPortrait.colorSpace=THREE.SRGBColorSpace;
+const portraitMesh=new THREE.Mesh(new THREE.PlaneGeometry(.80,1.13),new THREE.MeshBasicMaterial({map:liamPortrait,side:THREE.DoubleSide}));
+portraitMesh.position.set(-.51,1.78,.044);
+campBoardGroup.add(portraitMesh);
+// Canvas-drawn board lettering avoids adding expensive 3D glyph meshes.
+const boardLabelCanvas=document.createElement('canvas');
+boardLabelCanvas.width=512;boardLabelCanvas.height=850;
+const blc=boardLabelCanvas.getContext('2d');
+blc.clearRect(0,0,512,850);
+blc.fillStyle='#eddfc7';blc.font='bold 66px Arial, sans-serif';
+blc.fillText('LIAM',22,180);
+blc.fillStyle='#cde77f';blc.fillRect(22,211,405,6);
+blc.fillStyle='#e8d9c2';blc.font='bold 34px Arial, sans-serif';
+blc.fillText('FROM THE',22,288);blc.fillText('FIRST STEP',22,331);
+blc.font='25px Arial, sans-serif';
+blc.fillText('8,849 METRES',22,425);
+blc.fillText('ONE BIG DREAM',22,470);
+blc.fillText('ONE STEP',22,580);blc.fillText('AT A TIME',22,625);
+blc.font='20px Arial, sans-serif';blc.fillStyle='#b8c4bb';
+blc.fillText('THE ASCENT',22,745);
+const boardLabelTexture=new THREE.CanvasTexture(boardLabelCanvas);boardLabelTexture.colorSpace=THREE.SRGBColorSpace;
+const boardLabel=new THREE.Mesh(new THREE.PlaneGeometry(.84,1.31),new THREE.MeshBasicMaterial({map:boardLabelTexture,transparent:true,side:THREE.DoubleSide,depthWrite:false}));
+boardLabel.position.set(.49,1.76,.043);campBoardGroup.add(boardLabel);
+for(const bx of [-.91,.91])for(const by of [1.13,2.44]){
+ const nail=new THREE.Mesh(new THREE.SphereGeometry(.026,7,5),new THREE.MeshStandardMaterial({color:0xc2bba1,metalness:.55,roughness:.45}));
+ nail.position.set(bx,by,.057);campBoardGroup.add(nail);
+}
 // Finale: trail climbs left onto the highest exposed pinnacle, with open air
 // on both sides and a drop-off beyond the tip.
 const summitZ=-212,summitX=ascentX(summitZ),summitY=ascentY(summitZ);
@@ -686,6 +754,26 @@ sizeSnow();
 let lastScrollActivity=performance.now();
 const journey=document.querySelector('#journey'),texts=[...document.querySelectorAll('.stagecopy')],counter=document.querySelector('#counter-num'),progress=document.querySelector('#progress'),hint=document.querySelector('#scrollhint');let current=0,target=0,prev=performance.now();const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;function resize(){let w=innerWidth,h=innerHeight;quality.resize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();sizeSnow()}addEventListener('resize',resize);resize();const summitStory=document.getElementById('summit-story'),summitScrim=document.getElementById('summit-scrim');
 const SUMMIT_SCROLL_SCREENS=2.35;
+// V9.3: isolate all three scroll-speed changes from the camera geometry.
+// 20% less scrolling between the mountain handoff and camp arrival.
+// 20% more scrolling for the board close-in (its keyframe interval).
+// 50% more scrolling for the approved counterclockwise board exit orbit.
+const CAMP_INTRO_SCREENS=2.35;
+const CAMP_ORBIT_START_SCREENS=1.70;
+const ORIGINAL_ORBIT_SCREENS=2.35+.70-CAMP_ORBIT_START_SCREENS;
+const CAMP_ORBIT_SCREENS=ORIGINAL_ORBIT_SCREENS*1.5;
+const CAMP_SCROLL_SCREENS=CAMP_ORBIT_START_SCREENS+CAMP_ORBIT_SCREENS;
+const ORIGINAL_CAMP_ENTRY_RAW=.445;
+const MOUNTAIN_APPROACH_START_RAW=.36;
+const CAMP_ENTRY_RAW=MOUNTAIN_APPROACH_START_RAW
+  +(ORIGINAL_CAMP_ENTRY_RAW-MOUNTAIN_APPROACH_START_RAW)*.8;
+// On departure, join a little farther along the *existing* mountain route;
+// this keeps the camera moving forward instead of reversing into a wide shot.
+const CAMP_FORWARD_REJOIN=.105;
+let campStoryProgress=0;
+let campOrbitProgress=0;
+const campStory=document.getElementById('camp-story');
+const campScrim=document.getElementById('camp-scrim');
 let summitStoryProgress=0;
 // Orbit should finish only when the beginning of the first summit story block
 // reaches the upper reading area (rather than while it is still near the bottom).
@@ -695,17 +783,65 @@ function onScroll(){
  const rect=journey.getBoundingClientRect();
  const scrolled=Math.max(0,-rect.top);
  // Keep the established camera coordinates, but remap the under-console scroll interval.
- const cameraTravel=innerHeight*6;
+ const baseCameraTravel=innerHeight*6;
+ const campStart=baseCameraTravel*CAMP_ENTRY_RAW;
+ const campTravel=innerHeight*CAMP_SCROLL_SCREENS;
+ const campIntroTravel=innerHeight*CAMP_INTRO_SCREENS;
+ // Keep the original number of scroll screens AFTER camp. Only compress the
+ // post-mountain portion before the camp, leaving stairs and summit unchanged.
+ const mountainRemainder=baseCameraTravel*(1-ORIGINAL_CAMP_ENTRY_RAW);
+ const cameraTravel=campStart+campTravel+mountainRemainder;
  const summitTravel=innerHeight*SUMMIT_SCROLL_SCREENS;
- // Preserve the first three StairMaster messages, then compress just the
- // under-console / blizzard passage so Everest arrives with fewer scrolls.
- const rawCameraProgress=clamp(scrolled/cameraTravel,0,1);
+ // Map the shorter approach to the SAME pre-camp camera rail position.
+ // After the camp, return to the original rail speed and keyframe positions.
+ const rawPosition=scrolled/baseCameraTravel;
+ let rawCameraProgress;
+ if(scrolled<=campStart){
+  rawCameraProgress=rawPosition<=MOUNTAIN_APPROACH_START_RAW
+    ? rawPosition
+    : MOUNTAIN_APPROACH_START_RAW
+      +(rawPosition-MOUNTAIN_APPROACH_START_RAW)
+       *(ORIGINAL_CAMP_ENTRY_RAW-MOUNTAIN_APPROACH_START_RAW)
+       /(CAMP_ENTRY_RAW-MOUNTAIN_APPROACH_START_RAW);
+ }else if(scrolled<campStart+campTravel){
+  rawCameraProgress=ORIGINAL_CAMP_ENTRY_RAW;
+ }else{
+  rawCameraProgress=ORIGINAL_CAMP_ENTRY_RAW
+    + (scrolled-campStart-campTravel)/mountainRemainder
+      *(1-ORIGINAL_CAMP_ENTRY_RAW);
+ }
+ rawCameraProgress=clamp(rawCameraProgress,0,1);
+ campStoryProgress=clamp((scrolled-campStart)/campIntroTravel,0,1);
+ campOrbitProgress=clamp((scrolled-campStart-innerHeight*CAMP_ORBIT_START_SCREENS)
+   / (innerHeight*(CAMP_SCROLL_SCREENS-CAMP_ORBIT_START_SCREENS)),0,1);
+ const campActive=scrolled>campStart && scrolled<campStart+campTravel;
+ // Shorter mountain-to-board approach (30% less scroll); keep the caption
+ // hidden until the closer camera position has settled.
+ const campEntrance=smooth(.413,.503,campStoryProgress);
+ const campExit=1-smooth(.82,.99,campStoryProgress);
+ const campVisibility=campActive ? campEntrance*campExit : 0;
+ if(campStory){
+  const startY=innerHeight*.83;
+  const finishY=Math.max(125,innerHeight*.18);
+  const rise=smooth(.44,.72,campStoryProgress);
+  campStory.style.transform=`translate3d(0,${mix(startY,finishY,rise).toFixed(1)}px,0)`;
+  campStory.style.opacity=String(campVisibility);
+ }
+ if(campScrim)campScrim.style.opacity=String(campVisibility*.96);
  // V6.2: compress the passage after EVERY STEP COUNTS even further.
  // Keep the three message beats untouched and accelerate the same under-console camera path.
  const cameraWarp = rawCameraProgress<=.29 ? rawCameraProgress
    : rawCameraProgress<=.36 ? .29+(rawCameraProgress-.29)*(.53-.29)/(.36-.29)
    : .53+(rawCameraProgress-.36)*(1-.53)/(1-.36);
- target=cameraWarp;
+ // Enter the next mountain waypoint directly when leaving camp. Blend the
+ // progress boost gradually back to zero over the remainder of the flight,
+ // so the established summit keyframes remain unchanged and continuous.
+ const forwardAdvance=campActive
+  ? CAMP_FORWARD_REJOIN*smooth(.58,1,campOrbitProgress)
+  : scrolled>=campStart+campTravel
+    ? CAMP_FORWARD_REJOIN*(1-smooth(.59,.88,cameraWarp))
+    : 0;
+ target=clamp(cameraWarp+forwardAdvance,0,1);
  summitStoryProgress=clamp((scrolled-cameraTravel)/summitTravel,0,1);
  const storyHeight=summitStory.offsetHeight;
  // Stop with the final mission block resting at the lower edge of the viewport;
@@ -743,7 +879,7 @@ function onScroll(){
  const departureX=direction*leave*Math.min(innerWidth*.20,155);
  const glide=(mountainCaptionTime-from)/span-.5;
  const parallaxY=(1-entry)*28+glide*-24+leave*-16;
- e.style.opacity=String(fade*captionsVisible*(1-smooth(0,.035,summitStoryProgress)));
+ e.style.opacity=String(fade*captionsVisible*(1-smooth(0,.035,summitStoryProgress))*(1-campVisibility));
  e.style.setProperty('--story-x',(entranceX+departureX)+'px');
  e.style.setProperty('--story-y',parallaxY+'px');
  e.style.setProperty('--story-scale',String(.955+.045*entry-.015*leave));
@@ -756,7 +892,8 @@ document.querySelectorAll('header a[href="#story"],header a[href="#mission"]').f
   ev.preventDefault();
   const offset=link.getAttribute('href')==='#story'?.18:.78;
   const journeyTop=journey.getBoundingClientRect().top+scrollY;
-  scrollTo({top:journeyTop+innerHeight*(6+offset*SUMMIT_SCROLL_SCREENS),behavior:reduced?'auto':'smooth'});
+  const cameraScreens=6*CAMP_ENTRY_RAW+CAMP_SCROLL_SCREENS+6*(1-ORIGINAL_CAMP_ENTRY_RAW);
+  scrollTo({top:journeyTop+innerHeight*(cameraScreens+offset*SUMMIT_SCROLL_SCREENS),behavior:reduced?'auto':'smooth'});
  });
 });
 const transitionMist=document.getElementById('transition-veil');
@@ -813,7 +950,77 @@ function draw(now){
  // Console-first opening: preserve the existing camera's side angle (X/Z position)
  // and ease an elevated eye line back into the untouched original scroll path.
  // The console texture occupies (0, 5.74, -2.426) in the StairMaster model.
- const p=sample(t);
+ let p=sample(t);
+ // Camp departure: hold the board's close-up, orbit around it with a gradual
+ // rise, look down the climbing route, then move FORWARD to a fixed rail point.
+ // The rail destination must not chase the interpolated scroll position; doing
+ // so caused a noticeable backward/snap movement at the end of the chapter.
+ const campArrival=smooth(.063,.21,campStoryProgress);
+ const campClose=smooth(.21,.4116,campStoryProgress);
+ if(campArrival>.0001 && campOrbitProgress<1){
+  const boardWorld=campBoardGroup.localToWorld(new THREE.Vector3(0,1.80,.055));
+  const approachPos=campLayout.localToWorld(new THREE.Vector3(-1.83,.84,1.34));
+  const closePos=campLayout.localToWorld(new THREE.Vector3(-2.04,.91,-.54));
+  const approachCamera=approachPos.clone().lerp(closePos,campClose);
+  const heading=boardWorld.clone().sub(approachCamera).normalize();
+  const cameraRight=new THREE.Vector3().crossVectors(heading,new THREE.Vector3(0,1,0)).normalize();
+  const sideOffset=innerWidth<800?.16:.38;
+  const boardLook=boardWorld.clone().addScaledVector(cameraRight,sideOffset);
+  const approachLook=boardWorld.clone().add(new THREE.Vector3(0,.20,0));
+  const closeLook=approachLook.clone().lerp(boardLook,campClose);
+  let guidedPosition=approachCamera;
+  let guidedLook=closeLook;
+  let guidedFov=mix(innerWidth<800?48:44,innerWidth<800?37:32,campClose);
+
+  if(campOrbitProgress>0){
+   // The positive rotation is the direction approved for the exit in V9.1.
+   const orbitEnd=.64;
+   const radius=closePos.clone().sub(boardWorld);
+   const axis=new THREE.Vector3(0,1,0);
+   const orbitPosition=u=>boardWorld.clone()
+     .add(radius.clone().applyAxisAngle(axis,1.24*u).multiplyScalar(1+.10*u))
+     .add(new THREE.Vector3(0,1.35*u,-1.65*u));
+   const finalOrbitPosition=orbitPosition(1);
+
+   // Sample the same future mountain rail position every frame, instead of
+   // evaluating a moving endpoint whose coordinates jump during the orbit.
+   const joinT=clamp(.53+((ORIGINAL_CAMP_ENTRY_RAW-.36)*(.47/.64))+CAMP_FORWARD_REJOIN,0,1);
+   const joinFrame=sample(joinT);
+   const railPosition=new THREE.Vector3(...joinFrame.pos);
+   const railLook=new THREE.Vector3(...joinFrame.look);
+   const before=sample(joinT-.008),after=sample(joinT+.008);
+   const railTangent=new THREE.Vector3(...after.pos)
+     .sub(new THREE.Vector3(...before.pos)).normalize();
+   const orbitTangent=orbitPosition(1).sub(orbitPosition(.98)).normalize();
+   const travelTowardRail=railPosition.clone().sub(finalOrbitPosition).normalize();
+   const departDirection=orbitTangent.lerp(travelTowardRail,.72).normalize();
+   const handoffCurve=new THREE.CubicBezierCurve3(
+     finalOrbitPosition,
+     finalOrbitPosition.clone().addScaledVector(departDirection,4.5),
+     railPosition.clone().addScaledVector(railTangent,-5.5),
+     railPosition
+   );
+
+   // First turn with a changing elevation; only after completing the orbit
+   // does the camera travel along the new forward segment toward the path.
+   const orbitPhase=smooth(0,orbitEnd,campOrbitProgress);
+   const departurePhase=smooth(orbitEnd,1,campOrbitProgress);
+   const trailLead=finalOrbitPosition.clone().lerp(railLook,.52);
+   if(campOrbitProgress<=orbitEnd){
+     guidedPosition=orbitPosition(orbitPhase);
+     guidedLook=boardLook.clone().lerp(trailLead,smooth(.18,1,orbitPhase));
+     guidedFov=mix(innerWidth<800?37:32,innerWidth<800?41:37,orbitPhase);
+   }else{
+     guidedPosition=handoffCurve.getPoint(departurePhase);
+     guidedLook=trailLead.clone().lerp(railLook,departurePhase);
+     guidedFov=mix(innerWidth<800?41:37,joinFrame.fov,departurePhase);
+   }
+  }
+  const campWeight=campArrival;
+  p={pos:p.pos.map((value,k)=>mix(value,guidedPosition.getComponent(k),campWeight)),
+     look:p.look.map((value,k)=>mix(value,guidedLook.getComponent(k),campWeight)),
+     fov:mix(p.fov,guidedFov,campWeight)};
+ }
  const consoleIntro=1-smooth(0,.075,t);
  const rise=consoleIntro*2.75;
  const openingPos=[p.pos[0],p.pos[1]+rise,p.pos[2]];
