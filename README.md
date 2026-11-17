@@ -150,3 +150,7 @@ The close-up and text entrance are unchanged. From 80% of the camp chapter, the 
 - Board exit orbit: 50% longer scroll, preserving its path and direction.
 - Journey scroll length and internal story anchors are synchronized with these intervals.
 - No model, texture, typography, scene or contact-form changes.
+
+
+## V9.4: Shorter orbit-to-rail handoff
+Preserves the V9.3 orbit timing and curve; shortens only the final forward connection from ~0.73 viewport-heights to 0.34. Updates sticky page height accordingly. No other scene or text modifications.

@@ -761,8 +761,14 @@ const SUMMIT_SCROLL_SCREENS=2.35;
 const CAMP_INTRO_SCREENS=2.35;
 const CAMP_ORBIT_START_SCREENS=1.70;
 const ORIGINAL_ORBIT_SCREENS=2.35+.70-CAMP_ORBIT_START_SCREENS;
+// Preserve the full approved orbit duration, but shorten ONLY the final
+// board-to-mountain-rail connection after the rotation finishes.
 const CAMP_ORBIT_SCREENS=ORIGINAL_ORBIT_SCREENS*1.5;
-const CAMP_SCROLL_SCREENS=CAMP_ORBIT_START_SCREENS+CAMP_ORBIT_SCREENS;
+const PREVIOUS_ORBIT_PORTION=.64;
+const CAMP_TURN_SCREENS=CAMP_ORBIT_SCREENS*PREVIOUS_ORBIT_PORTION;
+const CAMP_HANDOFF_SCREENS=.34; // previously ~.73 viewport-heights
+const CAMP_EXIT_SCREENS=CAMP_TURN_SCREENS+CAMP_HANDOFF_SCREENS;
+const CAMP_SCROLL_SCREENS=CAMP_ORBIT_START_SCREENS+CAMP_EXIT_SCREENS;
 const ORIGINAL_CAMP_ENTRY_RAW=.445;
 const MOUNTAIN_APPROACH_START_RAW=.36;
 const CAMP_ENTRY_RAW=MOUNTAIN_APPROACH_START_RAW
@@ -815,15 +821,16 @@ function onScroll(){
  campOrbitProgress=clamp((scrolled-campStart-innerHeight*CAMP_ORBIT_START_SCREENS)
    / (innerHeight*(CAMP_SCROLL_SCREENS-CAMP_ORBIT_START_SCREENS)),0,1);
  const campActive=scrolled>campStart && scrolled<campStart+campTravel;
- // Shorter mountain-to-board approach (30% less scroll); keep the caption
- // hidden until the closer camera position has settled.
- const campEntrance=smooth(.413,.503,campStoryProgress);
+ // Begin revealing the introduction halfway through the final board zoom.
+ // Camera close-up occupies .21–.4116, so a .31 reveal start lets the text
+ // glide upward while the camera is still approaching the board.
+ const campEntrance=smooth(.305,.405,campStoryProgress);
  const campExit=1-smooth(.82,.99,campStoryProgress);
  const campVisibility=campActive ? campEntrance*campExit : 0;
  if(campStory){
   const startY=innerHeight*.83;
   const finishY=Math.max(125,innerHeight*.18);
-  const rise=smooth(.44,.72,campStoryProgress);
+  const rise=smooth(.31,.63,campStoryProgress);
   campStory.style.transform=`translate3d(0,${mix(startY,finishY,rise).toFixed(1)}px,0)`;
   campStory.style.opacity=String(campVisibility);
  }
@@ -974,7 +981,9 @@ function draw(now){
 
   if(campOrbitProgress>0){
    // The positive rotation is the direction approved for the exit in V9.1.
-   const orbitEnd=.64;
+   // The orbit travels the same distance in the same scroll length as V9.3.
+   // Only the subsequent straightening/rejoin has less scroll distance.
+   const orbitEnd=CAMP_TURN_SCREENS/CAMP_EXIT_SCREENS;
    const radius=closePos.clone().sub(boardWorld);
    const axis=new THREE.Vector3(0,1,0);
    const orbitPosition=u=>boardWorld.clone()
